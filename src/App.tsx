@@ -1,17 +1,20 @@
+
 import { Toaster } from "@/components/ui/toaster";
-import Index from "@/pages";
+import Index from "@/pages/Index";
 import PcsPage from "@/pages/PcsPage";
 import PcDetailPage from "@/pages/PcDetailPage";
 import PerifericosPage from "@/pages/PerifericosPage";
 import NotFound from "@/pages/NotFound";
-import { QueryClient } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminPanel from "@/pages/AdminPanel";
 
+const queryClient = new QueryClient();
+
 function App() {
   return (
-    <QueryClient>
+    <QueryClientProvider client={queryClient}>
       <TooltipProvider>
         <Toaster />
         <BrowserRouter>
@@ -25,7 +28,7 @@ function App() {
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
-    </QueryClient>
+    </QueryClientProvider>
   );
 }
 
