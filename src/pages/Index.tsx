@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { SocialIcons } from "@/components/SocialIcons";
 import { BenefitsSection } from "@/components/BenefitsSection";
+import { SoldPcsCarousel } from "@/components/SoldPcsCarousel";
 import { TechBackground } from "@/components/TechBackground";
 import { MessageCircle, Gamepad2 } from "lucide-react";
 
@@ -75,6 +76,9 @@ const Index = () => {
 
       {/* Benefits Section */}
       <BenefitsSection />
+
+      {/* Sold PCs Carousel */}
+      <SoldPcsCarousel />
 
       {/* Footer */}
       <footer className="relative z-10 py-6 md:py-8 px-4 border-t border-gray-800">

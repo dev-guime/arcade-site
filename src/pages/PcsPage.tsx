@@ -127,8 +127,14 @@ const PcsPage = () => {
 
       {/* PCs Carousel */}
       <main className="relative z-10 px-4 py-12">
-        <div className="max-w-7xl mx-auto">
-          <Carousel className="w-full">
+        <div className="max-w-6xl mx-auto">
+          <Carousel 
+            className="w-full"
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+          >
             <CarouselContent className="-ml-2 md:-ml-4">
               {pcs.map((pc) => (
                 <CarouselItem key={pc.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
@@ -199,8 +205,8 @@ const PcsPage = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black -left-12" />
-            <CarouselNext className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black -right-12" />
+            <CarouselPrevious className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black left-4" />
+            <CarouselNext className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black right-4" />
           </Carousel>
         </div>
       </main>
