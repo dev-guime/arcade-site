@@ -43,6 +43,11 @@ const Index = () => {
         </div>
       </header>
 
+      {/* Mobile Social Icons - Visible without click */}
+      <div className="relative z-10 mb-6 md:hidden">
+        <SocialIcons variant="mobile-visible" />
+      </div>
+
       {/* Main CTA Section */}
       <section className="relative z-10 text-center py-8 md:py-16 px-4">
         <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">

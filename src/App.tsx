@@ -9,6 +9,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { TooltipProvider } from "@/components/ui/tooltip"
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import AdminPanel from "@/pages/AdminPanel";
+import { ProductsProvider } from "@/contexts/ProductsContext";
 
 const queryClient = new QueryClient();
 
@@ -16,17 +17,19 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <Toaster />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/pcs" element={<PcsPage />} />
-            <Route path="/pc/:id" element={<PcDetailPage />} />
-            <Route path="/perifericos" element={<PerifericosPage />} />
-            <Route path="/admin" element={<AdminPanel />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
+        <ProductsProvider>
+          <Toaster />
+          <BrowserRouter>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/pcs" element={<PcsPage />} />
+              <Route path="/pc/:id" element={<PcDetailPage />} />
+              <Route path="/perifericos" element={<PerifericosPage />} />
+              <Route path="/admin" element={<AdminPanel />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </BrowserRouter>
+        </ProductsProvider>
       </TooltipProvider>
     </QueryClientProvider>
   );

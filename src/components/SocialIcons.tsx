@@ -5,7 +5,7 @@ import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { useState } from "react";
 
 interface SocialIconsProps {
-  variant?: 'floating' | 'footer';
+  variant?: 'floating' | 'footer' | 'mobile-visible';
   showOnProductPages?: boolean;
 }
 
@@ -52,6 +52,31 @@ export const SocialIcons = ({ variant = 'floating', showOnProductPages = true }:
           </a>
         ))}
       </>
+    );
+  }
+
+  if (variant === 'mobile-visible') {
+    return (
+      <div className="flex justify-center space-x-4 md:hidden">
+        {socialLinks.map((social) => (
+          <Button
+            key={social.name}
+            asChild
+            variant="ghost"
+            size="icon"
+            className={`w-12 h-12 bg-gray-900/80 backdrop-blur-sm border border-gray-700 text-gray-300 transition-all duration-300 ${social.color} hover:bg-gray-800 hover:scale-110 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]`}
+          >
+            <a
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={social.name}
+            >
+              {social.icon}
+            </a>
+          </Button>
+        ))}
+      </div>
     );
   }
 

@@ -2,6 +2,7 @@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -30,6 +31,9 @@ export const EditProductModal = ({ isOpen, onClose, product, type, onUpdate }: E
           <DialogTitle className="text-white">
             Editar {type === "pcs" ? "PC" : "Periférico"}
           </DialogTitle>
+          <DialogDescription className="text-gray-400">
+            Edite as informações do produto selecionado.
+          </DialogDescription>
         </DialogHeader>
         
         {type === "pcs" ? (

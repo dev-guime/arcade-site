@@ -4,9 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye, Edit, Trash2 } from "lucide-react";
-import { pcsData } from "@/data/pcsData";
 import { useNavigate } from "react-router-dom";
 import { EditProductModal } from "./EditProductModal";
+import { useProducts } from "@/contexts/ProductsContext";
+import { useToast } from "@/hooks/use-toast";
 
 interface ProductListProps {
   type: "pcs" | "perifericos";
@@ -14,58 +15,12 @@ interface ProductListProps {
 
 export const ProductList = ({ type }: ProductListProps) => {
   const navigate = useNavigate();
+  const { pcs, perifericos, deletePc, deletePeriferico, updatePc, updatePeriferico } = useProducts();
+  const { toast } = useToast();
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
-  // Dados reais dos PCs
-  const pcProducts = pcsData.map(pc => ({
-    id: pc.id,
-    name: pc.name,
-    price: pc.price,
-    category: parseFloat(pc.price.replace(/[^\d]/g, '')) <= 2500 ? "Linha Essencial" : 
-              parseFloat(pc.price.replace(/[^\d]/g, '')) <= 5000 ? "Linha Performance" : "Linha Avançada",
-    highlight: pc.highlight,
-    image: "/placeholder.svg",
-    specs: pc.specs || []
-  }));
-
-  // Mock data para periféricos - seria substituído por dados reais do Supabase
-  const perifericosProducts = [
-    {
-      id: 1,
-      name: "Headset Gamer RGB Pro",
-      price: "R$ 299",
-      category: "Áudio",
-      highlight: true,
-      image: "/placeholder.svg"
-    },
-    {
-      id: 2,
-      name: "Controle Wireless Elite",
-      price: "R$ 199",
-      category: "Controles",
-      highlight: false,
-      image: "/placeholder.svg"
-    },
-    {
-      id: 3,
-      name: "Monitor Gamer 27' 144Hz",
-      price: "R$ 899",
-      category: "Vídeo",
-      highlight: true,
-      image: "/placeholder.svg"
-    },
-    {
-      id: 4,
-      name: "Kit Teclado + Mouse RGB",
-      price: "R$ 159",
-      category: "Setup",
-      highlight: false,
-      image: "/placeholder.svg"
-    },
-  ];
-
-  const products = type === "pcs" ? pcProducts : perifericosProducts;
+  const products = type === "pcs" ? pcs : perifericos;
   const colorScheme = type === "pcs" ? "cyan" : "pink";
 
   const handleView = (productId: number) => {
@@ -82,14 +37,30 @@ export const ProductList = ({ type }: ProductListProps) => {
   };
 
   const handleUpdate = (updatedProduct: any) => {
-    console.log("Produto atualizado:", updatedProduct);
-    // Aqui seria implementada a lógica para atualizar no Supabase
+    if (type === "pcs") {
+      updatePc(editingProduct.id, updatedProduct);
+    } else {
+      updatePeriferico(editingProduct.id, updatedProduct);
+    }
+    
+    toast({
+      title: "Sucesso!",
+      description: `${type === "pcs" ? "PC" : "Periférico"} atualizado com sucesso!`,
+    });
   };
 
   const handleDelete = (productId: number) => {
     if (confirm(`Tem certeza que deseja remover o produto ${productId}?`)) {
-      console.log(`Removendo produto ${productId}`);
-      // Aqui seria implementada a lógica para remover do Supabase
+      if (type === "pcs") {
+        deletePc(productId);
+      } else {
+        deletePeriferico(productId);
+      }
+      
+      toast({
+        title: "Produto removido",
+        description: `${type === "pcs" ? "PC" : "Periférico"} removido com sucesso!`,
+      });
     }
   };
 
@@ -110,7 +81,7 @@ export const ProductList = ({ type }: ProductListProps) => {
               >
                 <div className="flex items-center space-x-4">
                   <img
-                    src={product.image}
+                    src={product.image || "/placeholder.svg"}
                     alt={product.name}
                     className="w-16 h-16 object-cover rounded-lg bg-gray-700"
                   />

@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Plus, Upload, X, Cpu, HardDrive, Zap, Monitor, MemoryStick, Fan, Gamepad2 } from "lucide-react";
+import { useProducts } from "@/contexts/ProductsContext";
+import { useToast } from "@/hooks/use-toast";
 
 const iconOptions = [
   { value: "cpu", label: "Processador", icon: Cpu },
@@ -31,13 +33,20 @@ interface PcFormProps {
 }
 
 export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
-  const [specs, setSpecs] = useState<Array<{value: string, icon: string}>>([
-    editingPc?.specs?.map((spec: string, index: number) => ({
-      value: spec,
-      icon: index === 0 ? "cpu" : index === 1 ? "memory" : index === 2 ? "storage" : "other"
-    })) || [{ value: "", icon: "cpu" }]
-  ]);
-  const [mainImage, setMainImage] = useState<string>(editingPc?.image || "");
+  const { addPc, updatePc } = useProducts();
+  const { toast } = useToast();
+  
+  const [specs, setSpecs] = useState<Array<{value: string, icon: string}>>(() => {
+    if (editingPc?.specs) {
+      return editingPc.specs.map((spec: string, index: number) => ({
+        value: spec,
+        icon: index === 0 ? "cpu" : index === 1 ? "memory" : index === 2 ? "storage" : "other"
+      }));
+    }
+    return [{ value: "", icon: "cpu" }];
+  });
+  
+  const [mainImage, setMainImage] = useState<string>(editingPc?.image || "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png");
   const [secondaryImages, setSecondaryImages] = useState<string[]>(editingPc?.secondaryImages || []);
   const [formData, setFormData] = useState({
     name: editingPc?.name || "",
@@ -75,11 +84,34 @@ export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
     setSecondaryImages(newImages);
   };
 
+  const resetForm = () => {
+    setFormData({
+      name: "",
+      price: "",
+      category: "",
+      description: "",
+      highlight: false,
+    });
+    setSpecs([{ value: "", icon: "cpu" }]);
+    setMainImage("/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png");
+    setSecondaryImages([]);
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    if (!formData.name || !formData.price || !formData.category) {
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha todos os campos obrigatórios.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     const data = {
       ...formData,
-      mainImage,
+      image: mainImage,
       secondaryImages,
       specs: specs.map(spec => spec.value).filter(Boolean),
       specIcons: specs.map(spec => spec.icon),
@@ -87,8 +119,19 @@ export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
     
     if (onSubmit) {
       onSubmit(data);
+    } else if (editingPc) {
+      updatePc(editingPc.id, data);
+      toast({
+        title: "Sucesso!",
+        description: "PC atualizado com sucesso!",
+      });
     } else {
-      console.log("PC data to save:", data);
+      addPc(data);
+      toast({
+        title: "Sucesso!",
+        description: "PC adicionado com sucesso!",
+      });
+      resetForm();
     }
   };
 
@@ -111,37 +154,39 @@ export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
-                <Label htmlFor="name" className="text-gray-300">Nome do PC</Label>
+                <Label htmlFor="name" className="text-gray-300">Nome do PC *</Label>
                 <Input
                   id="name"
                   placeholder="Ex: PC Gamer RGB Pro"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
+                  required
                 />
               </div>
 
               <div>
-                <Label htmlFor="price" className="text-gray-300">Preço</Label>
+                <Label htmlFor="price" className="text-gray-300">Preço *</Label>
                 <Input
                   id="price"
                   placeholder="Ex: R$ 2.499"
                   value={formData.price}
                   onChange={(e) => setFormData({...formData, price: e.target.value})}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
+                  required
                 />
               </div>
 
               <div>
-                <Label htmlFor="category" className="text-gray-300">Categoria</Label>
+                <Label htmlFor="category" className="text-gray-300">Categoria *</Label>
                 <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
                   <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                     <SelectValue placeholder="Selecione a linha" />
                   </SelectTrigger>
                   <SelectContent className="bg-gray-800 border-gray-600">
-                    <SelectItem value="essencial">Linha Essencial</SelectItem>
-                    <SelectItem value="performance">Linha Performance</SelectItem>
-                    <SelectItem value="avancada">Linha Avançada</SelectItem>
+                    <SelectItem value="Linha Essencial">Linha Essencial</SelectItem>
+                    <SelectItem value="Linha Performance">Linha Performance</SelectItem>
+                    <SelectItem value="Linha Avançada">Linha Avançada</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -169,64 +214,6 @@ export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 min-h-[120px]"
                 />
               </div>
-            </div>
-          </div>
-
-          {/* Imagens */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Imagens</h3>
-            
-            {/* Imagem Principal */}
-            <div>
-              <Label htmlFor="mainImage" className="text-gray-300">Imagem Principal</Label>
-              <div className="flex space-x-2">
-                <Input
-                  id="mainImage"
-                  placeholder="URL da imagem principal"
-                  value={mainImage}
-                  onChange={(e) => setMainImage(e.target.value)}
-                  className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
-                />
-                <Button type="button" variant="outline" className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent">
-                  <Upload className="w-4 h-4" />
-                </Button>
-              </div>
-            </div>
-
-            {/* Imagens Secundárias */}
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <Label className="text-gray-300">Imagens Secundárias</Label>
-                <Button
-                  type="button"
-                  onClick={addSecondaryImage}
-                  variant="outline"
-                  size="sm"
-                  className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Adicionar
-                </Button>
-              </div>
-              {secondaryImages.map((image, index) => (
-                <div key={index} className="flex space-x-2 mb-2">
-                  <Input
-                    placeholder="URL da imagem"
-                    value={image}
-                    onChange={(e) => updateSecondaryImage(index, e.target.value)}
-                    className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
-                  />
-                  <Button
-                    type="button"
-                    onClick={() => removeSecondaryImage(index)}
-                    variant="outline"
-                    size="sm"
-                    className="border-red-500 text-red-400 hover:bg-red-500/20 bg-transparent"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
             </div>
           </div>
 
@@ -300,7 +287,7 @@ export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
             </Button>
             <Button
               type="button"
-              onClick={onCancel}
+              onClick={onCancel || resetForm}
               variant="outline"
               className="border-gray-600 text-gray-300 hover:bg-gray-800 bg-transparent"
             >
