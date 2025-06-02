@@ -12,24 +12,52 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, Upload, X, Cpu, HardDrive, Zap, Monitor } from "lucide-react";
+import { Plus, Upload, X, Cpu, HardDrive, Zap, Monitor, MemoryStick, Fan, Gamepad2 } from "lucide-react";
 
-export const AdminPcForm = () => {
-  const [specs, setSpecs] = useState<string[]>([""]);
-  const [mainImage, setMainImage] = useState<string>("");
-  const [secondaryImages, setSecondaryImages] = useState<string[]>([]);
+const iconOptions = [
+  { value: "cpu", label: "Processador", icon: Cpu },
+  { value: "memory", label: "Memória RAM", icon: MemoryStick },
+  { value: "storage", label: "Armazenamento", icon: HardDrive },
+  { value: "gpu", label: "Placa de Vídeo", icon: Monitor },
+  { value: "power", label: "Fonte", icon: Zap },
+  { value: "cooling", label: "Refrigeração", icon: Fan },
+  { value: "other", label: "Outros", icon: Gamepad2 },
+];
+
+interface PcFormProps {
+  editingPc?: any;
+  onSubmit?: (data: any) => void;
+  onCancel?: () => void;
+}
+
+export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
+  const [specs, setSpecs] = useState<Array<{value: string, icon: string}>>([
+    editingPc?.specs?.map((spec: string, index: number) => ({
+      value: spec,
+      icon: index === 0 ? "cpu" : index === 1 ? "memory" : index === 2 ? "storage" : "other"
+    })) || [{ value: "", icon: "cpu" }]
+  ]);
+  const [mainImage, setMainImage] = useState<string>(editingPc?.image || "");
+  const [secondaryImages, setSecondaryImages] = useState<string[]>(editingPc?.secondaryImages || []);
+  const [formData, setFormData] = useState({
+    name: editingPc?.name || "",
+    price: editingPc?.price || "",
+    category: editingPc?.category || "",
+    description: editingPc?.description || "",
+    highlight: editingPc?.highlight || false,
+  });
 
   const addSpec = () => {
-    setSpecs([...specs, ""]);
+    setSpecs([...specs, { value: "", icon: "cpu" }]);
   };
 
   const removeSpec = (index: number) => {
     setSpecs(specs.filter((_, i) => i !== index));
   };
 
-  const updateSpec = (index: number, value: string) => {
+  const updateSpec = (index: number, field: string, value: string) => {
     const newSpecs = [...specs];
-    newSpecs[index] = value;
+    newSpecs[index] = { ...newSpecs[index], [field]: value };
     setSpecs(newSpecs);
   };
 
@@ -49,8 +77,24 @@ export const AdminPcForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    // Aqui seria implementada a lógica para salvar o produto
-    console.log("PC adicionado!");
+    const data = {
+      ...formData,
+      mainImage,
+      secondaryImages,
+      specs: specs.map(spec => spec.value).filter(Boolean),
+      specIcons: specs.map(spec => spec.icon),
+    };
+    
+    if (onSubmit) {
+      onSubmit(data);
+    } else {
+      console.log("PC data to save:", data);
+    }
+  };
+
+  const getIconComponent = (iconType: string) => {
+    const iconOption = iconOptions.find(opt => opt.value === iconType);
+    return iconOption ? iconOption.icon : Cpu;
   };
 
   return (
@@ -58,7 +102,7 @@ export const AdminPcForm = () => {
       <CardHeader>
         <CardTitle className="text-cyan-400 flex items-center">
           <Cpu className="w-5 h-5 mr-2" />
-          Adicionar Novo PC
+          {editingPc ? "Editar PC" : "Adicionar Novo PC"}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -71,6 +115,8 @@ export const AdminPcForm = () => {
                 <Input
                   id="name"
                   placeholder="Ex: PC Gamer RGB Pro"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
                 />
               </div>
@@ -80,13 +126,15 @@ export const AdminPcForm = () => {
                 <Input
                   id="price"
                   placeholder="Ex: R$ 2.499"
+                  value={formData.price}
+                  onChange={(e) => setFormData({...formData, price: e.target.value})}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
                 />
               </div>
 
               <div>
                 <Label htmlFor="category" className="text-gray-300">Categoria</Label>
-                <Select>
+                <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
                   <SelectTrigger className="bg-gray-800 border-gray-600 text-white">
                     <SelectValue placeholder="Selecione a linha" />
                   </SelectTrigger>
@@ -102,6 +150,8 @@ export const AdminPcForm = () => {
                 <input
                   type="checkbox"
                   id="highlight"
+                  checked={formData.highlight}
+                  onChange={(e) => setFormData({...formData, highlight: e.target.checked})}
                   className="rounded border-gray-600 bg-gray-800"
                 />
                 <Label htmlFor="highlight" className="text-gray-300">Destacar como "Mais Vendido"</Label>
@@ -114,6 +164,8 @@ export const AdminPcForm = () => {
                 <Textarea
                   id="description"
                   placeholder="Descrição detalhada do PC..."
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 min-h-[120px]"
                 />
               </div>
@@ -135,7 +187,7 @@ export const AdminPcForm = () => {
                   onChange={(e) => setMainImage(e.target.value)}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
                 />
-                <Button type="button" variant="outline" className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10">
+                <Button type="button" variant="outline" className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent">
                   <Upload className="w-4 h-4" />
                 </Button>
               </div>
@@ -150,7 +202,7 @@ export const AdminPcForm = () => {
                   onClick={addSecondaryImage}
                   variant="outline"
                   size="sm"
-                  className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10"
+                  className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Adicionar
@@ -169,7 +221,7 @@ export const AdminPcForm = () => {
                     onClick={() => removeSecondaryImage(index)}
                     variant="outline"
                     size="sm"
-                    className="border-red-500 text-red-400 hover:bg-red-500/10"
+                    className="border-red-500 text-red-400 hover:bg-red-500/20 bg-transparent"
                   >
                     <X className="w-4 h-4" />
                   </Button>
@@ -187,7 +239,7 @@ export const AdminPcForm = () => {
                 onClick={addSpec}
                 variant="outline"
                 size="sm"
-                className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/10"
+                className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Adicionar
@@ -195,18 +247,32 @@ export const AdminPcForm = () => {
             </div>
             
             {specs.map((spec, index) => (
-              <div key={index} className="flex space-x-2">
+              <div key={index} className="flex space-x-2 items-center">
                 <div className="w-8 h-8 bg-cyan-500/20 rounded flex items-center justify-center">
-                  {index === 0 && <Cpu className="w-4 h-4 text-cyan-400" />}
-                  {index === 1 && <Zap className="w-4 h-4 text-cyan-400" />}
-                  {index === 2 && <HardDrive className="w-4 h-4 text-cyan-400" />}
-                  {index === 3 && <Monitor className="w-4 h-4 text-cyan-400" />}
-                  {index > 3 && <div className="w-2 h-2 bg-cyan-400 rounded-full" />}
+                  {(() => {
+                    const IconComponent = getIconComponent(spec.icon);
+                    return <IconComponent className="w-4 h-4 text-cyan-400" />;
+                  })()}
                 </div>
+                <Select value={spec.icon} onValueChange={(value) => updateSpec(index, 'icon', value)}>
+                  <SelectTrigger className="w-48 bg-gray-800 border-gray-600 text-white">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent className="bg-gray-800 border-gray-600">
+                    {iconOptions.map((option) => (
+                      <SelectItem key={option.value} value={option.value} className="text-white">
+                        <div className="flex items-center space-x-2">
+                          <option.icon className="w-4 h-4" />
+                          <span>{option.label}</span>
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 <Input
                   placeholder={`Especificação ${index + 1}`}
-                  value={spec}
-                  onChange={(e) => updateSpec(index, e.target.value)}
+                  value={spec.value}
+                  onChange={(e) => updateSpec(index, 'value', e.target.value)}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
                 />
                 {specs.length > 1 && (
@@ -215,7 +281,7 @@ export const AdminPcForm = () => {
                     onClick={() => removeSpec(index)}
                     variant="outline"
                     size="sm"
-                    className="border-red-500 text-red-400 hover:bg-red-500/10"
+                    className="border-red-500 text-red-400 hover:bg-red-500/20 bg-transparent"
                   >
                     <X className="w-4 h-4" />
                   </Button>
@@ -230,12 +296,13 @@ export const AdminPcForm = () => {
               type="submit"
               className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500"
             >
-              Salvar PC
+              {editingPc ? "Atualizar PC" : "Salvar PC"}
             </Button>
             <Button
               type="button"
+              onClick={onCancel}
               variant="outline"
-              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+              className="border-gray-600 text-gray-300 hover:bg-gray-800 bg-transparent"
             >
               Cancelar
             </Button>

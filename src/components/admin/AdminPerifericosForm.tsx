@@ -8,10 +8,22 @@ import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Plus, Upload, X, Gamepad2, Headphones, Keyboard, Monitor, Cpu } from "lucide-react";
 
-export const AdminPerifericosForm = () => {
-  const [specs, setSpecs] = useState<string[]>([""]);
-  const [mainImage, setMainImage] = useState<string>("");
-  const [secondaryImages, setSecondaryImages] = useState<string[]>([]);
+interface PerifericosFormProps {
+  editingProduct?: any;
+  onSubmit?: (data: any) => void;
+  onCancel?: () => void;
+}
+
+export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: PerifericosFormProps) => {
+  const [specs, setSpecs] = useState<string[]>([editingProduct?.specs?.[0] || ""]);
+  const [mainImage, setMainImage] = useState<string>(editingProduct?.image || "");
+  const [secondaryImages, setSecondaryImages] = useState<string[]>(editingProduct?.secondaryImages || []);
+  const [formData, setFormData] = useState({
+    name: editingProduct?.name || "",
+    price: editingProduct?.price || "",
+    description: editingProduct?.description || "",
+    highlight: editingProduct?.highlight || false,
+  });
 
   const addSpec = () => {
     setSpecs([...specs, ""]);
@@ -43,7 +55,18 @@ export const AdminPerifericosForm = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Periférico adicionado!");
+    const data = {
+      ...formData,
+      mainImage,
+      secondaryImages,
+      specs: specs.filter(Boolean),
+    };
+    
+    if (onSubmit) {
+      onSubmit(data);
+    } else {
+      console.log("Periférico data to save:", data);
+    }
   };
 
   const renderForm = (category: string) => (
@@ -51,7 +74,7 @@ export const AdminPerifericosForm = () => {
       <CardHeader>
         <CardTitle className="text-pink-400 flex items-center">
           <Gamepad2 className="w-5 h-5 mr-2" />
-          Adicionar {category}
+          {editingProduct ? "Editar" : "Adicionar"} {category}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -64,6 +87,8 @@ export const AdminPerifericosForm = () => {
                 <Input
                   id="name"
                   placeholder="Ex: Headset Gamer RGB Pro"
+                  value={formData.name}
+                  onChange={(e) => setFormData({...formData, name: e.target.value})}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
                 />
               </div>
@@ -73,6 +98,8 @@ export const AdminPerifericosForm = () => {
                 <Input
                   id="price"
                   placeholder="Ex: R$ 299"
+                  value={formData.price}
+                  onChange={(e) => setFormData({...formData, price: e.target.value})}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
                 />
               </div>
@@ -81,6 +108,8 @@ export const AdminPerifericosForm = () => {
                 <input
                   type="checkbox"
                   id="highlight"
+                  checked={formData.highlight}
+                  onChange={(e) => setFormData({...formData, highlight: e.target.checked})}
                   className="rounded border-gray-600 bg-gray-800"
                 />
                 <Label htmlFor="highlight" className="text-gray-300">Destacar como "Mais Vendido"</Label>
@@ -93,6 +122,8 @@ export const AdminPerifericosForm = () => {
                 <Textarea
                   id="description"
                   placeholder="Descrição detalhada do produto..."
+                  value={formData.description}
+                  onChange={(e) => setFormData({...formData, description: e.target.value})}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 min-h-[120px]"
                 />
               </div>
@@ -114,7 +145,7 @@ export const AdminPerifericosForm = () => {
                   onChange={(e) => setMainImage(e.target.value)}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
                 />
-                <Button type="button" variant="outline" className="border-pink-500 text-pink-400 hover:bg-pink-500/10">
+                <Button type="button" variant="outline" className="border-pink-500 text-pink-400 hover:bg-pink-500/20 bg-transparent">
                   <Upload className="w-4 h-4" />
                 </Button>
               </div>
@@ -129,7 +160,7 @@ export const AdminPerifericosForm = () => {
                   onClick={addSecondaryImage}
                   variant="outline"
                   size="sm"
-                  className="border-pink-500 text-pink-400 hover:bg-pink-500/10"
+                  className="border-pink-500 text-pink-400 hover:bg-pink-500/20 bg-transparent"
                 >
                   <Plus className="w-4 h-4 mr-1" />
                   Adicionar
@@ -148,7 +179,7 @@ export const AdminPerifericosForm = () => {
                     onClick={() => removeSecondaryImage(index)}
                     variant="outline"
                     size="sm"
-                    className="border-red-500 text-red-400 hover:bg-red-500/10"
+                    className="border-red-500 text-red-400 hover:bg-red-500/20 bg-transparent"
                   >
                     <X className="w-4 h-4" />
                   </Button>
@@ -166,7 +197,7 @@ export const AdminPerifericosForm = () => {
                 onClick={addSpec}
                 variant="outline"
                 size="sm"
-                className="border-pink-500 text-pink-400 hover:bg-pink-500/10"
+                className="border-pink-500 text-pink-400 hover:bg-pink-500/20 bg-transparent"
               >
                 <Plus className="w-4 h-4 mr-1" />
                 Adicionar
@@ -190,7 +221,7 @@ export const AdminPerifericosForm = () => {
                     onClick={() => removeSpec(index)}
                     variant="outline"
                     size="sm"
-                    className="border-red-500 text-red-400 hover:bg-red-500/10"
+                    className="border-red-500 text-red-400 hover:bg-red-500/20 bg-transparent"
                   >
                     <X className="w-4 h-4" />
                   </Button>
@@ -205,12 +236,13 @@ export const AdminPerifericosForm = () => {
               type="submit"
               className="bg-gradient-to-r from-pink-500 to-orange-600 hover:from-pink-400 hover:to-orange-500"
             >
-              Salvar Produto
+              {editingProduct ? "Atualizar Produto" : "Salvar Produto"}
             </Button>
             <Button
               type="button"
+              onClick={onCancel}
               variant="outline"
-              className="border-gray-600 text-gray-300 hover:bg-gray-800"
+              className="border-gray-600 text-gray-300 hover:bg-gray-800 bg-transparent"
             >
               Cancelar
             </Button>
