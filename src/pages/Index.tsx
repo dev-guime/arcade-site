@@ -4,9 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { SocialIcons } from "@/components/SocialIcons";
 import { BenefitsSection } from "@/components/BenefitsSection";
 import { TechBackground } from "@/components/TechBackground";
+import { MessageCircle } from "lucide-react";
 
 const Index = () => {
   const navigate = useNavigate();
+
+  const handleWhatsAppClick = () => {
+    window.open('https://wa.me/5543984273723', '_blank');
+  };
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -33,13 +38,22 @@ const Index = () => {
 
       {/* Main CTA Section */}
       <section className="relative z-10 text-center py-16 px-4">
-        <div className="max-w-2xl mx-auto">
+        <div className="max-w-2xl mx-auto space-y-6">
           <Button
             onClick={() => navigate('/pcs')}
             className="group relative px-12 py-6 text-xl font-bold bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 border-2 border-cyan-400 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.6)]"
           >
             <span className="relative z-10">VEJA NOSSOS PC'S</span>
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-purple-700 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-lg"></div>
+          </Button>
+          
+          <Button
+            onClick={handleWhatsAppClick}
+            className="group relative px-12 py-6 text-xl font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-400 hover:to-green-500 border-2 border-green-400 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_30px_rgba(34,197,94,0.6)] flex items-center justify-center gap-3"
+          >
+            <MessageCircle className="w-6 h-6" />
+            <span className="relative z-10">FALE CONOSCO</span>
+            <div className="absolute inset-0 bg-gradient-to-r from-green-600 to-green-700 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-lg"></div>
           </Button>
         </div>
       </section>

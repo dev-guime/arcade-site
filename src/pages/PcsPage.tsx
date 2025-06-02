@@ -65,11 +65,11 @@ const PcsPage = () => {
             {pcs.map((pc) => (
               <Card
                 key={pc.id}
-                className={`relative bg-gray-900 border-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] ${
+                className={`relative bg-gray-900 border-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] animate-pulse ${
                   pc.highlight 
                     ? 'border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.4)]' 
                     : 'border-gray-700 hover:border-cyan-400'
-                }`}
+                } floating-animation`}
               >
                 {pc.highlight && (
                   <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -78,6 +78,16 @@ const PcsPage = () => {
                     </span>
                   </div>
                 )}
+                
+                {/* PC Image */}
+                <div className="relative h-48 overflow-hidden rounded-t-lg">
+                  <img 
+                    src="/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png" 
+                    alt={pc.name}
+                    className="w-full h-full object-cover object-center"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
+                </div>
                 
                 <CardHeader>
                   <CardTitle className="text-2xl font-bold text-cyan-400">
@@ -104,7 +114,10 @@ const PcsPage = () => {
                     ))}
                   </div>
                   
-                  <Button className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 border border-cyan-400 transition-all duration-300">
+                  <Button 
+                    onClick={() => navigate(`/pc/${pc.id}`)}
+                    className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 border border-cyan-400 transition-all duration-300"
+                  >
                     QUERO ESTE PC
                   </Button>
                 </CardContent>
@@ -122,6 +135,26 @@ const PcsPage = () => {
           </p>
         </div>
       </footer>
+
+      <style jsx>{`
+        @keyframes floating {
+          0%, 100% {
+            transform: translateY(0px);
+          }
+          50% {
+            transform: translateY(-10px);
+          }
+        }
+        .floating-animation {
+          animation: floating 3s ease-in-out infinite;
+        }
+        .floating-animation:nth-child(2) {
+          animation-delay: 0.5s;
+        }
+        .floating-animation:nth-child(3) {
+          animation-delay: 1s;
+        }
+      `}</style>
     </div>
   );
 };

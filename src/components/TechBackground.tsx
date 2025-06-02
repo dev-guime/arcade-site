@@ -8,14 +8,13 @@ export const TechBackground = () => {
       {/* Animated Grid */}
       <div className="absolute inset-0 opacity-20">
         <div 
-          className="w-full h-full"
+          className="w-full h-full grid-background"
           style={{
             backgroundImage: `
               linear-gradient(rgba(34, 211, 238, 0.1) 1px, transparent 1px),
               linear-gradient(90deg, rgba(34, 211, 238, 0.1) 1px, transparent 1px)
             `,
             backgroundSize: '50px 50px',
-            animation: 'grid-move 20s linear infinite'
           }}
         ></div>
       </div>
@@ -47,6 +46,9 @@ export const TechBackground = () => {
         @keyframes grid-move {
           0% { transform: translate(0, 0); }
           100% { transform: translate(50px, 50px); }
+        }
+        .grid-background {
+          animation: grid-move 20s linear infinite;
         }
       `}</style>
     </div>
