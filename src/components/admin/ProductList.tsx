@@ -2,22 +2,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Eye } from "lucide-react";
+import { Eye, Edit, Trash2 } from "lucide-react";
 import { pcsData } from "@/data/pcsData";
+import { useNavigate } from "react-router-dom";
 
 interface ProductListProps {
   type: "pcs" | "perifericos";
 }
 
 export const ProductList = ({ type }: ProductListProps) => {
+  const navigate = useNavigate();
+
   // Dados reais dos PCs
   const pcProducts = pcsData.map(pc => ({
     id: pc.id,
     name: pc.name,
-    price: `R$ ${pc.price.toLocaleString()}`,
-    category: pc.price <= 2500 ? "Linha Essencial" : pc.price <= 5000 ? "Linha Performance" : "Linha Avançada",
+    price: pc.price,
+    category: parseFloat(pc.price.replace(/[^\d]/g, '')) <= 2500 ? "Linha Essencial" : 
+              parseFloat(pc.price.replace(/[^\d]/g, '')) <= 5000 ? "Linha Performance" : "Linha Avançada",
     highlight: pc.highlight,
-    image: pc.image
+    image: "/placeholder.svg" // Usar placeholder por enquanto
   }));
 
   // Mock data para periféricos - seria substituído por dados reais
@@ -59,6 +63,25 @@ export const ProductList = ({ type }: ProductListProps) => {
   const products = type === "pcs" ? pcProducts : perifericosProducts;
   const colorScheme = type === "pcs" ? "cyan" : "pink";
 
+  const handleView = (productId: number) => {
+    if (type === "pcs") {
+      navigate(`/pc/${productId}`);
+    } else {
+      // Para periféricos, redirecionar para página de periféricos
+      navigate('/perifericos');
+    }
+  };
+
+  const handleEdit = (productId: number) => {
+    // TODO: Implementar modal de edição
+    console.log(`Editando produto ${productId}`);
+  };
+
+  const handleDelete = (productId: number) => {
+    // TODO: Implementar remoção do produto
+    console.log(`Removendo produto ${productId}`);
+  };
+
   return (
     <Card className="bg-gray-900/50 border-gray-700">
       <CardHeader>
@@ -97,21 +120,24 @@ export const ProductList = ({ type }: ProductListProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:border-blue-400"
+                  onClick={() => handleView(product.id)}
+                  className="border-blue-500 text-blue-400 hover:bg-blue-500/20 hover:border-blue-400 bg-transparent"
                 >
                   <Eye className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`border-${colorScheme}-500 text-${colorScheme}-400 hover:bg-${colorScheme}-500/10 hover:border-${colorScheme}-400`}
+                  onClick={() => handleEdit(product.id)}
+                  className={`border-${colorScheme}-500 text-${colorScheme}-400 hover:bg-${colorScheme}-500/20 hover:border-${colorScheme}-400 bg-transparent`}
                 >
                   <Edit className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-red-500 text-red-400 hover:bg-red-500/10 hover:border-red-400"
+                  onClick={() => handleDelete(product.id)}
+                  className="border-red-500 text-red-400 hover:bg-red-500/20 hover:border-red-400 bg-transparent"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>

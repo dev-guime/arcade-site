@@ -37,8 +37,8 @@ const AdminPanel = () => {
       <SidebarProvider>
         <div className="flex w-full">
           {/* Sidebar */}
-          <Sidebar className="border-r border-gray-800 bg-gray-900">
-            <SidebarHeader className="border-b border-gray-800 p-6">
+          <Sidebar className="border-r border-gray-800 bg-black">
+            <SidebarHeader className="border-b border-gray-800 p-6 bg-black">
               <div className="flex items-center space-x-3">
                 <img 
                   src="/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png" 
@@ -54,7 +54,7 @@ const AdminPanel = () => {
               </div>
             </SidebarHeader>
             
-            <SidebarContent className="p-4 bg-gray-900">
+            <SidebarContent className="p-4 bg-black">
               <SidebarMenu>
                 {sidebarItems.map((item) => (
                   <SidebarMenuItem key={item.title}>
@@ -63,8 +63,8 @@ const AdminPanel = () => {
                       className={`w-full justify-start ${
                         (activeSection === "dashboard" && item.section === "dashboard") || 
                         ((activeSection === "pcs" || activeSection === "perifericos") && item.section === "products")
-                          ? 'bg-cyan-500/20 text-cyan-400 border border-cyan-500/30' 
-                          : 'text-gray-300 hover:text-white hover:bg-gray-800'
+                          ? 'bg-gradient-to-r from-cyan-500/20 to-purple-500/20 text-cyan-400 border border-cyan-500/30' 
+                          : 'text-gray-300 hover:text-white hover:bg-gray-900'
                       }`}
                     >
                       <item.icon className="w-4 h-4" />
@@ -107,7 +107,7 @@ const AdminPanel = () => {
                           className={`${
                             activeSection === "pcs"
                               ? 'bg-gradient-to-r from-cyan-500 to-blue-600 text-white hover:from-cyan-600 hover:to-blue-700'
-                              : 'border-gray-600 text-gray-300 hover:text-white hover:border-cyan-400 hover:bg-cyan-500/10'
+                              : 'border-gray-600 text-gray-300 hover:text-white hover:border-cyan-400 hover:bg-cyan-500/10 bg-transparent'
                           }`}
                         >
                           <Computer className="w-4 h-4 mr-2" />
@@ -119,7 +119,7 @@ const AdminPanel = () => {
                           className={`${
                             activeSection === "perifericos"
                               ? 'bg-gradient-to-r from-pink-500 to-orange-600 text-white hover:from-pink-600 hover:to-orange-700'
-                              : 'border-gray-600 text-gray-300 hover:text-white hover:border-pink-400 hover:bg-pink-500/10'
+                              : 'border-gray-600 text-gray-300 hover:text-white hover:border-pink-400 hover:bg-pink-500/10 bg-transparent'
                           }`}
                         >
                           <Gamepad2 className="w-4 h-4 mr-2" />
@@ -133,10 +133,10 @@ const AdminPanel = () => {
                   {activeSection === "pcs" && (
                     <Tabs defaultValue="list" className="w-full">
                       <TabsList className="grid w-full grid-cols-2 bg-gray-800 border border-gray-700">
-                        <TabsTrigger value="list" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black">
+                        <TabsTrigger value="list" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black text-gray-300">
                           Listar PCs
                         </TabsTrigger>
-                        <TabsTrigger value="add" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black">
+                        <TabsTrigger value="add" className="data-[state=active]:bg-cyan-500 data-[state=active]:text-black text-gray-300">
                           Adicionar PC
                         </TabsTrigger>
                       </TabsList>
@@ -154,10 +154,10 @@ const AdminPanel = () => {
                   {activeSection === "perifericos" && (
                     <Tabs defaultValue="list" className="w-full">
                       <TabsList className="grid w-full grid-cols-2 bg-gray-800 border border-gray-700">
-                        <TabsTrigger value="list" className="data-[state=active]:bg-pink-500 data-[state=active]:text-black">
+                        <TabsTrigger value="list" className="data-[state=active]:bg-pink-500 data-[state=active]:text-black text-gray-300">
                           Listar Periféricos
                         </TabsTrigger>
-                        <TabsTrigger value="add" className="data-[state=active]:bg-pink-500 data-[state=active]:text-black">
+                        <TabsTrigger value="add" className="data-[state=active]:bg-pink-500 data-[state=active]:text-black text-gray-300">
                           Adicionar Periférico
                         </TabsTrigger>
                       </TabsList>

@@ -9,11 +9,14 @@ export const AdminDashboard = () => {
   const totalPcs = pcsData.length;
   const totalPerifericos = 8; // Baseado nos periféricos mostrados no site
   
-  // Separar PCs por linha
+  // Separar PCs por linha (convertendo string para number para comparação)
   const pcsByLine = {
-    essencial: pcsData.filter(pc => pc.price <= 2500).length,
-    performance: pcsData.filter(pc => pc.price > 2500 && pc.price <= 5000).length,
-    avancada: pcsData.filter(pc => pc.price > 5000).length,
+    essencial: pcsData.filter(pc => parseFloat(pc.price.replace(/[^\d]/g, '')) <= 2500).length,
+    performance: pcsData.filter(pc => {
+      const price = parseFloat(pc.price.replace(/[^\d]/g, ''));
+      return price > 2500 && price <= 5000;
+    }).length,
+    avancada: pcsData.filter(pc => parseFloat(pc.price.replace(/[^\d]/g, '')) > 5000).length,
   };
 
   const stats = [
@@ -32,13 +35,6 @@ export const AdminDashboard = () => {
       change: "+5 este mês"
     },
     {
-      title: "Produtos em Destaque",
-      value: pcsData.filter(pc => pc.highlight).length + 2, // 2 periféricos em destaque
-      icon: TrendingUp,
-      color: "green",
-      change: "3 ativos"
-    },
-    {
       title: "Total de Produtos",
       value: totalPcs + totalPerifericos,
       icon: Package,
@@ -50,7 +46,7 @@ export const AdminDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Estatísticas Principais */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {stats.map((stat) => (
           <Card key={stat.title} className="bg-gray-900/50 border-gray-700">
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -139,33 +135,6 @@ export const AdminDashboard = () => {
           </CardContent>
         </Card>
       </div>
-
-      {/* Produtos em Destaque */}
-      <Card className="bg-gray-900/50 border-gray-700">
-        <CardHeader>
-          <CardTitle className="text-white flex items-center gap-2">
-            <TrendingUp className="w-5 h-5" />
-            Produtos em Destaque
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {pcsData.filter(pc => pc.highlight).slice(0, 3).map((pc) => (
-              <div key={pc.id} className="flex items-center space-x-3 p-3 bg-gray-800/50 rounded-lg">
-                <img
-                  src={pc.image}
-                  alt={pc.name}
-                  className="w-12 h-12 object-cover rounded-lg bg-gray-700"
-                />
-                <div className="flex-1 min-w-0">
-                  <p className="text-white font-medium truncate">{pc.name}</p>
-                  <p className="text-cyan-400 text-sm">R$ {pc.price.toLocaleString()}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 };
