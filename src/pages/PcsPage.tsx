@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
@@ -225,7 +224,7 @@ const PcsPage = () => {
           </div>
 
           {/* Desktop Carousel */}
-          <div className="hidden md:block relative px-16">
+          <div className="hidden md:block relative px-24">
             <Carousel 
               className="w-full"
               opts={{
