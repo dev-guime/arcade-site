@@ -65,7 +65,7 @@ const PcsPage = () => {
             {pcs.map((pc) => (
               <Card
                 key={pc.id}
-                className={`relative bg-gray-900 border-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] animate-pulse ${
+                className={`relative bg-gray-900 border-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] ${
                   pc.highlight 
                     ? 'border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.4)]' 
                     : 'border-gray-700 hover:border-cyan-400'
@@ -136,25 +136,27 @@ const PcsPage = () => {
         </div>
       </footer>
 
-      <style jsx>{`
-        @keyframes floating {
-          0%, 100% {
-            transform: translateY(0px);
+      <style>
+        {`
+          @keyframes floating {
+            0%, 100% {
+              transform: translateY(0px);
+            }
+            50% {
+              transform: translateY(-10px);
+            }
           }
-          50% {
-            transform: translateY(-10px);
+          .floating-animation {
+            animation: floating 3s ease-in-out infinite;
           }
-        }
-        .floating-animation {
-          animation: floating 3s ease-in-out infinite;
-        }
-        .floating-animation:nth-child(2) {
-          animation-delay: 0.5s;
-        }
-        .floating-animation:nth-child(3) {
-          animation-delay: 1s;
-        }
-      `}</style>
+          .floating-animation:nth-child(2) {
+            animation-delay: 0.5s;
+          }
+          .floating-animation:nth-child(3) {
+            animation-delay: 1s;
+          }
+        `}
+      </style>
     </div>
   );
 };

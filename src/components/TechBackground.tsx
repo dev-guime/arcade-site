@@ -42,15 +42,17 @@ export const TechBackground = () => {
         </svg>
       </div>
 
-      <style jsx>{`
-        @keyframes grid-move {
-          0% { transform: translate(0, 0); }
-          100% { transform: translate(50px, 50px); }
-        }
-        .grid-background {
-          animation: grid-move 20s linear infinite;
-        }
-      `}</style>
+      <style>
+        {`
+          @keyframes grid-move {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+          }
+          .grid-background {
+            animation: grid-move 20s linear infinite;
+          }
+        `}
+      </style>
     </div>
   );
 };
