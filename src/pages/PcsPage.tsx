@@ -128,7 +128,7 @@ const PcsPage = () => {
       <ProductPageBackground />
 
       {/* Header */}
-      <header className="relative z-10 border-b border-gray-800 px-4 py-4 md:py-6">
+      <header className="relative z-10 border-b border-gray-800 px-4 py-3">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Button
             onClick={() => navigate('/')}
@@ -146,7 +146,7 @@ const PcsPage = () => {
       </header>
 
       {/* PCs Content */}
-      <main className="relative z-10 px-4 py-6 md:py-12">
+      <main className="relative z-10 px-4 py-4">
         <div className="max-w-6xl mx-auto">
           
           {/* Mobile Grid Layout */}
@@ -178,7 +178,7 @@ const PcsPage = () => {
                   )}
                   
                   {/* PC Image */}
-                  <div className="relative h-40 overflow-hidden rounded-t-lg mt-2">
+                  <div className="relative h-32 overflow-hidden rounded-t-lg mt-2">
                     <img 
                       src="/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png" 
                       alt={pc.name}
@@ -187,19 +187,19 @@ const PcsPage = () => {
                     <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
                   </div>
                   
-                  <CardHeader className="pb-3">
-                    <CardTitle className="text-base font-bold text-cyan-400">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm font-bold text-cyan-400">
                       {pc.name}
                     </CardTitle>
                     <CardDescription className="text-gray-300 text-xs">
                       {pc.description}
                     </CardDescription>
-                    <div className="text-xl font-bold text-white">
+                    <div className="text-lg font-bold text-white">
                       {pc.price}
                     </div>
                   </CardHeader>
                   
-                  <CardContent className="pt-0 space-y-3">
+                  <CardContent className="pt-0 space-y-2">
                     <div className="space-y-1">
                       {pc.specs.map((spec, index) => (
                         <div key={index} className="flex items-center text-gray-300 text-xs">
@@ -225,7 +225,7 @@ const PcsPage = () => {
           </div>
 
           {/* Desktop Carousel */}
-          <div className="hidden md:block relative px-20">
+          <div className="hidden md:block relative px-16">
             <Carousel 
               className="w-full"
               opts={{
@@ -260,7 +260,7 @@ const PcsPage = () => {
                       )}
                       
                       {/* PC Image */}
-                      <div className="relative h-48 overflow-hidden rounded-t-lg mt-2">
+                      <div className="relative h-40 overflow-hidden rounded-t-lg mt-2">
                         <img 
                           src="/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png" 
                           alt={pc.name}
@@ -269,20 +269,20 @@ const PcsPage = () => {
                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
                       </div>
                       
-                      <CardHeader className="pb-4">
-                        <CardTitle className="text-xl font-bold text-cyan-400">
+                      <CardHeader className="pb-3">
+                        <CardTitle className="text-lg font-bold text-cyan-400">
                           {pc.name}
                         </CardTitle>
                         <CardDescription className="text-gray-300 text-sm">
                           {pc.description}
                         </CardDescription>
-                        <div className="text-2xl font-bold text-white">
+                        <div className="text-xl font-bold text-white">
                           {pc.price}
                         </div>
                       </CardHeader>
                       
                       <CardContent className="pt-0">
-                        <div className="space-y-2 mb-4">
+                        <div className="space-y-2 mb-3">
                           {pc.specs.map((spec, index) => (
                             <div key={index} className="flex items-center text-gray-300 text-sm">
                               {index === 0 && <Cpu className="mr-2 h-3 w-3 text-cyan-400" />}
@@ -305,15 +305,15 @@ const PcsPage = () => {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="text-white bg-gradient-to-r from-cyan-500 to-purple-600 border-2 border-cyan-400 hover:from-cyan-400 hover:to-purple-500 hover:border-purple-400 -left-16 w-12 h-12 shadow-[0_0_20px_rgba(34,211,238,0.5)] transition-all duration-300" />
-              <CarouselNext className="text-white bg-gradient-to-r from-cyan-500 to-purple-600 border-2 border-cyan-400 hover:from-cyan-400 hover:to-purple-500 hover:border-purple-400 -right-16 w-12 h-12 shadow-[0_0_20px_rgba(34,211,238,0.5)] transition-all duration-300" />
+              <CarouselPrevious className="text-white bg-gradient-to-r from-cyan-500 to-purple-600 border-2 border-cyan-400 hover:from-cyan-400 hover:to-purple-500 hover:border-purple-400 -left-12 w-10 h-10 shadow-[0_0_20px_rgba(34,211,238,0.5)] transition-all duration-300" />
+              <CarouselNext className="text-white bg-gradient-to-r from-cyan-500 to-purple-600 border-2 border-cyan-400 hover:from-cyan-400 hover:to-purple-500 hover:border-purple-400 -right-12 w-10 h-10 shadow-[0_0_20px_rgba(34,211,238,0.5)] transition-all duration-300" />
             </Carousel>
           </div>
         </div>
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-gray-800 px-4 py-6 md:py-8">
+      <footer className="relative z-10 border-t border-gray-800 px-4 py-4">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-gray-400 text-sm md:text-base">
             <span className="text-cyan-400 font-semibold">Retirada local</span> em Londrina-PR • 
