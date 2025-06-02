@@ -3,39 +3,67 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Edit, Trash2, Eye } from "lucide-react";
+import { pcsData } from "@/data/pcsData";
 
 interface ProductListProps {
   type: "pcs" | "perifericos";
 }
 
 export const ProductList = ({ type }: ProductListProps) => {
-  // Mock data - seria substituído por dados reais
-  const products = [
+  // Dados reais dos PCs
+  const pcProducts = pcsData.map(pc => ({
+    id: pc.id,
+    name: pc.name,
+    price: `R$ ${pc.price.toLocaleString()}`,
+    category: pc.price <= 2500 ? "Linha Essencial" : pc.price <= 5000 ? "Linha Performance" : "Linha Avançada",
+    highlight: pc.highlight,
+    image: pc.image
+  }));
+
+  // Mock data para periféricos - seria substituído por dados reais
+  const perifericosProducts = [
     {
       id: 1,
-      name: "PC Gamer RGB Pro",
-      price: "R$ 2.499",
-      category: "Linha Performance",
+      name: "Headset Gamer RGB Pro",
+      price: "R$ 299",
+      category: "Áudio",
       highlight: true,
-      image: "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png"
+      image: "/placeholder.svg"
     },
     {
       id: 2,
-      name: "Headset Gamer Pro",
-      price: "R$ 299",
-      category: "Áudio",
+      name: "Controle Wireless Elite",
+      price: "R$ 199",
+      category: "Controles",
+      highlight: false,
+      image: "/placeholder.svg"
+    },
+    {
+      id: 3,
+      name: "Monitor Gamer 27' 144Hz",
+      price: "R$ 899",
+      category: "Vídeo",
+      highlight: true,
+      image: "/placeholder.svg"
+    },
+    {
+      id: 4,
+      name: "Kit Teclado + Mouse RGB",
+      price: "R$ 159",
+      category: "Setup",
       highlight: false,
       image: "/placeholder.svg"
     },
   ];
 
+  const products = type === "pcs" ? pcProducts : perifericosProducts;
   const colorScheme = type === "pcs" ? "cyan" : "pink";
 
   return (
     <Card className="bg-gray-900/50 border-gray-700">
       <CardHeader>
         <CardTitle className={`text-${colorScheme}-400`}>
-          Lista de {type === "pcs" ? "PCs" : "Periféricos"}
+          Lista de {type === "pcs" ? "PCs" : "Periféricos"} ({products.length} produtos)
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -43,7 +71,7 @@ export const ProductList = ({ type }: ProductListProps) => {
           {products.map((product) => (
             <div
               key={product.id}
-              className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-700"
+              className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors"
             >
               <div className="flex items-center space-x-4">
                 <img
@@ -58,7 +86,7 @@ export const ProductList = ({ type }: ProductListProps) => {
                     <span className="text-white font-bold">{product.price}</span>
                     {product.highlight && (
                       <Badge className={`bg-${colorScheme}-500/20 text-${colorScheme}-400 border-${colorScheme}-500/30`}>
-                        Mais Vendido
+                        Em Destaque
                       </Badge>
                     )}
                   </div>
@@ -69,21 +97,21 @@ export const ProductList = ({ type }: ProductListProps) => {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-blue-500 text-blue-400 hover:bg-blue-500/10"
+                  className="border-blue-500 text-blue-400 hover:bg-blue-500/10 hover:border-blue-400"
                 >
                   <Eye className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className={`border-${colorScheme}-500 text-${colorScheme}-400 hover:bg-${colorScheme}-500/10`}
+                  className={`border-${colorScheme}-500 text-${colorScheme}-400 hover:bg-${colorScheme}-500/10 hover:border-${colorScheme}-400`}
                 >
                   <Edit className="w-4 h-4" />
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-red-500 text-red-400 hover:bg-red-500/10"
+                  className="border-red-500 text-red-400 hover:bg-red-500/10 hover:border-red-400"
                 >
                   <Trash2 className="w-4 h-4" />
                 </Button>
