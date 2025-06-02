@@ -25,42 +25,7 @@ export const useProducts = () => {
 
 export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [pcs, setPcs] = useState<Pc[]>([]);
-  const [perifericos, setPerifericos] = useState<Periferico[]>([
-    {
-      id: 1,
-      name: "Headset Gamer RGB Pro",
-      price: 299,
-      category: "Áudio",
-      highlight: true,
-      highlight_text: "Mais Vendido",
-      image: "/placeholder.svg"
-    },
-    {
-      id: 2,
-      name: "Controle Wireless Elite",
-      price: 199,
-      category: "Controles",
-      highlight: false,
-      image: "/placeholder.svg"
-    },
-    {
-      id: 3,
-      name: "Monitor Gamer 27' 144Hz",
-      price: 899,
-      category: "Vídeo",
-      highlight: true,
-      highlight_text: "Recomendado",
-      image: "/placeholder.svg"
-    },
-    {
-      id: 4,
-      name: "Kit Teclado + Mouse RGB",
-      price: 159,
-      category: "Setup",
-      highlight: false,
-      image: "/placeholder.svg"
-    },
-  ]);
+  const [perifericos, setPerifericos] = useState<Periferico[]>([]);
 
   const addPc = (newPc: Omit<Pc, 'id'>) => {
     const id = Math.max(...pcs.map(p => p.id), 0) + 1;

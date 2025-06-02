@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -5,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, X, Gamepad2, Headphones, Keyboard, Monitor, Cpu } from "lucide-react";
+import { Plus, X, Gamepad2, Headphones, Keyboard, Monitor, Cpu, Upload } from "lucide-react";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -24,7 +25,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
   const [secondaryImages, setSecondaryImages] = useState<string[]>(editingProduct?.secondaryImages || []);
   const [formData, setFormData] = useState({
     name: editingProduct?.name || "",
-    price: editingProduct?.price || 0,
+    price: editingProduct?.price || "",
     description: editingProduct?.description || "",
     highlight: editingProduct?.highlight || false,
     highlight_text: editingProduct?.highlight_text || "",
@@ -62,7 +63,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
   const resetForm = () => {
     setFormData({
       name: "",
-      price: 0,
+      price: "",
       description: "",
       highlight: false,
       highlight_text: "",
@@ -70,6 +71,13 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
     setSpecs([""]);
     setMainImage("/placeholder.svg");
     setSecondaryImages([]);
+  };
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    // Remove tudo que não for número ou ponto
+    const numericValue = value.replace(/[^0-9.]/g, '');
+    setFormData({...formData, price: numericValue});
   };
 
   const getCategoryFromTab = (tab: string) => {
@@ -97,6 +105,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
 
     const data = {
       ...formData,
+      price: parseFloat(formData.price),
       category: getCategoryFromTab(currentCategory),
       image: mainImage,
       secondaryImages,
@@ -122,7 +131,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
   };
 
   const renderForm = (category: string) => (
-    <Card className="bg-gray-800/50 border-gray-600 backdrop-blur-sm">
+    <Card className="bg-gray-800 border-gray-700">
       <CardHeader>
         <CardTitle className="text-pink-400 flex items-center">
           <Gamepad2 className="w-5 h-5 mr-2" />
@@ -141,7 +150,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
                   placeholder="Ex: Headset Gamer RGB Pro"
                   value={formData.name}
                   onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
+                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                   required
                 />
               </div>
@@ -150,13 +159,11 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
                 <Label htmlFor="price" className="text-gray-300">Preço (R$) *</Label>
                 <Input
                   id="price"
-                  type="number"
-                  step="0.01"
-                  min="0"
+                  type="text"
                   placeholder="Ex: 299.99"
                   value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value) || 0})}
-                  className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
+                  onChange={handlePriceChange}
+                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                   required
                 />
               </div>
@@ -167,7 +174,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
                   id="highlight"
                   checked={formData.highlight}
                   onChange={(e) => setFormData({...formData, highlight: e.target.checked})}
-                  className="rounded border-gray-600 bg-gray-800"
+                  className="rounded border-gray-600 bg-gray-700"
                 />
                 <Label htmlFor="highlight" className="text-gray-300">Destacar produto</Label>
               </div>
@@ -180,7 +187,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
                     placeholder="Ex: Mais Vendido, Recomendado, etc."
                     value={formData.highlight_text}
                     onChange={(e) => setFormData({...formData, highlight_text: e.target.value})}
-                    className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
+                    className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                   />
                 </div>
               )}
@@ -194,9 +201,82 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
                   placeholder="Descrição detalhada do produto..."
                   value={formData.description}
                   onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400 min-h-[120px]"
+                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 min-h-[120px]"
                 />
               </div>
+            </div>
+          </div>
+
+          {/* Upload de Imagens */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-white">Imagens do Produto</h3>
+            
+            {/* Imagem Principal */}
+            <div className="space-y-2">
+              <Label className="text-gray-300">Imagem Principal *</Label>
+              <div className="flex space-x-2">
+                <Input
+                  placeholder="URL da imagem principal"
+                  value={mainImage}
+                  onChange={(e) => setMainImage(e.target.value)}
+                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-pink-500 text-pink-400 hover:bg-pink-500/20 bg-transparent"
+                >
+                  <Upload className="w-4 h-4" />
+                </Button>
+              </div>
+              {mainImage && (
+                <div className="mt-2">
+                  <img src={mainImage} alt="Preview" className="w-24 h-24 object-cover rounded border border-gray-600" />
+                </div>
+              )}
+            </div>
+
+            {/* Imagens Secundárias */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <Label className="text-gray-300">Imagens Secundárias (Carrossel)</Label>
+                <Button
+                  type="button"
+                  onClick={addSecondaryImage}
+                  variant="outline"
+                  size="sm"
+                  className="border-pink-500 text-pink-400 hover:bg-pink-500/20 bg-transparent"
+                >
+                  <Plus className="w-4 h-4 mr-1" />
+                  Adicionar
+                </Button>
+              </div>
+              
+              {secondaryImages.map((image, index) => (
+                <div key={index} className="flex space-x-2">
+                  <Input
+                    placeholder={`URL da imagem ${index + 1}`}
+                    value={image}
+                    onChange={(e) => updateSecondaryImage(index, e.target.value)}
+                    className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
+                  />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="border-pink-500 text-pink-400 hover:bg-pink-500/20 bg-transparent"
+                  >
+                    <Upload className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => removeSecondaryImage(index)}
+                    variant="outline"
+                    className="border-red-500 text-red-400 hover:bg-red-500/20 bg-transparent"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -225,7 +305,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
                   placeholder={`Especificação ${index + 1}`}
                   value={spec}
                   onChange={(e) => updateSpec(index, e.target.value)}
-                  className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
+                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                 />
                 {specs.length > 1 && (
                   <Button
@@ -266,7 +346,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
 
   return (
     <Tabs defaultValue="combos" className="w-full" onValueChange={setCurrentCategory}>
-      <TabsList className="grid w-full grid-cols-5 bg-gray-800/50 border border-gray-600 mb-6">
+      <TabsList className="grid w-full grid-cols-5 bg-gray-800 border border-gray-600 mb-6">
         <TabsTrigger value="combos" className="data-[state=active]:bg-pink-400 data-[state=active]:text-black">
           <Gamepad2 className="w-4 h-4 mr-1" />
           Combos

@@ -41,19 +41,12 @@ export const AdminLayout = ({ children, activeTab, onTabChange }: AdminLayoutPro
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 relative overflow-hidden">
-      {/* Background Effects */}
-      <div className="absolute inset-0">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-blue-500/10 rounded-full blur-2xl animate-pulse delay-500"></div>
-      </div>
-
+    <div className="min-h-screen bg-gray-900">
       <SidebarProvider>
         <div className="flex w-full min-h-screen">
-          <Sidebar className="border-r border-gray-700/50">
-            <div className="bg-gradient-to-br from-gray-900 via-blue-900 to-purple-900 h-full">
-              <SidebarHeader className="p-6 border-b border-gray-700/50">
+          <Sidebar className="border-r border-gray-700">
+            <div className="bg-gray-900 h-full">
+              <SidebarHeader className="p-6 border-b border-gray-700">
                 <div className="flex items-center space-x-3">
                   <img 
                     src="/lovable-uploads/4f4e5f19-8048-4f7d-8fc2-3e63fab60673.png" 
@@ -71,7 +64,7 @@ export const AdminLayout = ({ children, activeTab, onTabChange }: AdminLayoutPro
                       <SidebarMenuButton
                         onClick={() => onTabChange(item.id)}
                         isActive={activeTab === item.id}
-                        className={`w-full justify-start text-gray-300 hover:text-white hover:bg-white/10 ${
+                        className={`w-full justify-start text-gray-300 hover:text-white hover:bg-gray-800 ${
                           activeTab === item.id ? 'bg-cyan-500/20 text-cyan-400 border-r-2 border-cyan-400' : ''
                         }`}
                       >
@@ -86,7 +79,7 @@ export const AdminLayout = ({ children, activeTab, onTabChange }: AdminLayoutPro
                   <Button
                     onClick={logout}
                     variant="outline"
-                    className="w-full border-red-500/50 text-red-400 hover:bg-red-500/20 hover:text-red-300"
+                    className="w-full border-red-500 text-red-400 hover:bg-red-500/20 hover:text-red-300 bg-transparent"
                   >
                     <LogOut className="w-4 h-4 mr-2" />
                     Sair
@@ -96,7 +89,7 @@ export const AdminLayout = ({ children, activeTab, onTabChange }: AdminLayoutPro
             </div>
           </Sidebar>
           
-          <main className="flex-1 relative z-10">
+          <main className="flex-1 bg-gray-900 p-6">
             {children}
           </main>
         </div>
