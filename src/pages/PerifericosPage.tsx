@@ -1,12 +1,15 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Headphones, Keyboard, Mouse, Gamepad2 } from "lucide-react";
+import { ArrowLeft, Headphones, Keyboard, Mouse, Gamepad2, Monitor, Speaker } from "lucide-react";
 import { ProductPageBackground } from "@/components/ProductPageBackground";
+import { useState } from "react";
 
 const PerifericosPage = () => {
   const navigate = useNavigate();
+  const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   const perifericos = [
     {
@@ -40,8 +43,50 @@ const PerifericosPage = () => {
       description: "Precisão máxima para FPS",
       specs: ["12000 DPI", "8 Botões", "RGB Customizável", "Sensor Óptico"],
       highlight: false
+    },
+    {
+      id: 5,
+      name: "MONITOR 24' 144HZ",
+      price: "R$ 899",
+      description: "Monitor gamer com alta taxa de atualização",
+      specs: ["24 polegadas", "144Hz", "1ms", "FreeSync"],
+      highlight: false
+    },
+    {
+      id: 6,
+      name: "WEBCAM 4K",
+      price: "R$ 299",
+      description: "Webcam profissional para streaming",
+      specs: ["4K 30fps", "Autofoco", "Microfone integrado", "USB 3.0"],
+      highlight: false
+    },
+    {
+      id: 7,
+      name: "CAIXA DE SOM RGB",
+      price: "R$ 179",
+      description: "Som potente com efeitos RGB",
+      specs: ["40W RMS", "Bluetooth 5.0", "RGB Sincronizado", "Controle remoto"],
+      highlight: false
+    },
+    {
+      id: 8,
+      name: "MOUSEPAD XXL",
+      price: "R$ 79",
+      description: "Mousepad grande com bordas costuradas",
+      specs: ["90x40cm", "Base antiderrapante", "Bordas costuradas", "Superfície lisa"],
+      highlight: false
     }
   ];
+
+  const getIcon = (name: string) => {
+    if (name.includes("COMBO")) return <Gamepad2 className="w-16 h-16 text-pink-400" />;
+    if (name.includes("HEADSET")) return <Headphones className="w-16 h-16 text-pink-400" />;
+    if (name.includes("TECLADO")) return <Keyboard className="w-16 h-16 text-pink-400" />;
+    if (name.includes("MOUSE") && !name.includes("MOUSEPAD")) return <Mouse className="w-16 h-16 text-pink-400" />;
+    if (name.includes("MONITOR")) return <Monitor className="w-16 h-16 text-pink-400" />;
+    if (name.includes("CAIXA")) return <Speaker className="w-16 h-16 text-pink-400" />;
+    return <Gamepad2 className="w-16 h-16 text-pink-400" />;
+  };
 
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
@@ -66,67 +111,75 @@ const PerifericosPage = () => {
         </div>
       </header>
 
-      {/* Periféricos Grid */}
+      {/* Periféricos Carousel */}
       <main className="relative z-10 px-4 py-12">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-4 gap-8">
-            {perifericos.map((item) => (
-              <Card
-                key={item.id}
-                className={`relative bg-gray-900/80 backdrop-blur-sm border-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] ${
-                  item.highlight 
-                    ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.4)]' 
-                    : 'border-gray-700 hover:border-pink-400'
-                } floating-animation`}
-              >
-                {item.highlight && (
-                  <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-                    <span className="bg-gradient-to-r from-pink-400 to-orange-500 px-4 py-1 rounded-full text-sm font-bold">
-                      MAIS VENDIDO
-                    </span>
-                  </div>
-                )}
-                
-                {/* Placeholder Image */}
-                <div className="relative h-40 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center rounded-t-lg">
-                  {item.name.includes("COMBO") && <Gamepad2 className="w-16 h-16 text-pink-400" />}
-                  {item.name.includes("HEADSET") && <Headphones className="w-16 h-16 text-pink-400" />}
-                  {item.name.includes("TECLADO") && <Keyboard className="w-16 h-16 text-pink-400" />}
-                  {item.name.includes("MOUSE") && <Mouse className="w-16 h-16 text-pink-400" />}
-                </div>
-                
-                <CardHeader>
-                  <CardTitle className="text-xl font-bold text-pink-400">
-                    {item.name}
-                  </CardTitle>
-                  <CardDescription className="text-gray-300">
-                    {item.description}
-                  </CardDescription>
-                  <div className="text-2xl font-bold text-white">
-                    {item.price}
-                  </div>
-                </CardHeader>
-                
-                <CardContent>
-                  <div className="space-y-2 mb-6">
-                    {item.specs.map((spec, index) => (
-                      <div key={index} className="flex items-center text-gray-300 text-sm">
-                        <div className="w-2 h-2 bg-pink-400 rounded-full mr-2"></div>
-                        <span>{spec}</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <Button 
-                    onClick={() => window.open('https://wa.me/5543984273723', '_blank')}
-                    className="w-full bg-gradient-to-r from-pink-500 to-orange-600 hover:from-pink-400 hover:to-orange-500 border border-pink-400 transition-all duration-300"
+        <div className="max-w-7xl mx-auto">
+          <Carousel className="w-full">
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {perifericos.map((item) => (
+                <CarouselItem key={item.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3 xl:basis-1/4">
+                  <Card
+                    className={`relative bg-gray-900/80 backdrop-blur-sm border-2 transition-all duration-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] floating-animation ${
+                      item.highlight 
+                        ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.4)]' 
+                        : 'border-gray-700 hover:border-pink-400'
+                    } ${
+                      hoveredId !== null && hoveredId !== item.id 
+                        ? 'opacity-30 scale-95' 
+                        : 'opacity-100'
+                    }`}
+                    onMouseEnter={() => setHoveredId(item.id)}
+                    onMouseLeave={() => setHoveredId(null)}
                   >
-                    QUERO ESTE
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
+                    {item.highlight && (
+                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
+                        <span className="bg-gradient-to-r from-pink-400 to-orange-500 px-4 py-1 rounded-full text-sm font-bold">
+                          MAIS VENDIDO
+                        </span>
+                      </div>
+                    )}
+                    
+                    {/* Placeholder Image */}
+                    <div className="relative h-40 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center rounded-t-lg">
+                      {getIcon(item.name)}
+                    </div>
+                    
+                    <CardHeader>
+                      <CardTitle className="text-xl font-bold text-pink-400">
+                        {item.name}
+                      </CardTitle>
+                      <CardDescription className="text-gray-300">
+                        {item.description}
+                      </CardDescription>
+                      <div className="text-2xl font-bold text-white">
+                        {item.price}
+                      </div>
+                    </CardHeader>
+                    
+                    <CardContent>
+                      <div className="space-y-2 mb-6">
+                        {item.specs.map((spec, index) => (
+                          <div key={index} className="flex items-center text-gray-300 text-sm">
+                            <div className="w-2 h-2 bg-pink-400 rounded-full mr-2"></div>
+                            <span>{spec}</span>
+                          </div>
+                        ))}
+                      </div>
+                      
+                      <Button 
+                        onClick={() => window.open('https://wa.me/5543984273723', '_blank')}
+                        className="w-full bg-gradient-to-r from-pink-500 to-orange-600 hover:from-pink-400 hover:to-orange-500 border border-pink-400 transition-all duration-300"
+                      >
+                        QUERO ESTE
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="text-pink-400 border-pink-400 hover:bg-pink-400 hover:text-black" />
+            <CarouselNext className="text-pink-400 border-pink-400 hover:bg-pink-400 hover:text-black" />
+          </Carousel>
         </div>
       </main>
 
