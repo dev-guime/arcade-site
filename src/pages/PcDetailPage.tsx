@@ -4,7 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Cpu, HardDrive, Monitor, Zap, MessageCircle, Shield, Award, Truck } from "lucide-react";
-import { SocialIcons } from "@/components/SocialIcons";
+import { ProductPageBackground } from "@/components/ProductPageBackground";
 
 const PcDetailPage = () => {
   const navigate = useNavigate();
@@ -70,16 +70,20 @@ const PcDetailPage = () => {
 
   const currentPc = pcs.find(pc => pc.id === parseInt(id || '1')) || pcs[0];
 
+  // Reordered carousel images - last image is now first
   const carouselImages = [
+    "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png",
     "/lovable-uploads/b63993e7-3962-4d10-9055-952ee2c0d607.png",
-    "/lovable-uploads/24481fb9-70f0-4920-a3ef-371d05e6006b.png",
-    "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png"
+    "/lovable-uploads/24481fb9-70f0-4920-a3ef-371d05e6006b.png"
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Product Page Background */}
+      <ProductPageBackground />
+
       {/* Header */}
-      <header className="border-b border-gray-800 px-4 py-6">
+      <header className="relative z-10 border-b border-gray-800 px-4 py-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Button
             onClick={() => navigate('/pcs')}
@@ -96,11 +100,8 @@ const PcDetailPage = () => {
         </div>
       </header>
 
-      {/* Social Icons */}
-      <SocialIcons />
-
       {/* Main Content */}
-      <main className="px-4 py-8">
+      <main className="relative z-10 px-4 py-8">
         <div className="max-w-6xl mx-auto">
           <div className="grid lg:grid-cols-2 gap-12">
             {/* Left Column - Carousel */}
@@ -109,7 +110,7 @@ const PcDetailPage = () => {
                 <CarouselContent>
                   {carouselImages.map((image, index) => (
                     <CarouselItem key={index}>
-                      <div className="aspect-square rounded-lg overflow-hidden bg-gray-900 border border-gray-700">
+                      <div className="aspect-square rounded-lg overflow-hidden bg-gray-900/80 backdrop-blur-sm border border-gray-700">
                         <img
                           src={image}
                           alt={`${currentPc.name} - Vista ${index + 1}`}
@@ -125,15 +126,15 @@ const PcDetailPage = () => {
               
               {/* Quick Benefits */}
               <div className="grid grid-cols-3 gap-4">
-                <div className="text-center p-4 bg-gray-900/50 rounded-lg border border-gray-700">
+                <div className="text-center p-4 bg-gray-900/50 backdrop-blur-sm rounded-lg border border-gray-700">
                   <Shield className="w-8 h-8 text-cyan-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-300">Garantia Total</p>
                 </div>
-                <div className="text-center p-4 bg-gray-900/50 rounded-lg border border-gray-700">
+                <div className="text-center p-4 bg-gray-900/50 backdrop-blur-sm rounded-lg border border-gray-700">
                   <Award className="w-8 h-8 text-purple-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-300">Testado 100%</p>
                 </div>
-                <div className="text-center p-4 bg-gray-900/50 rounded-lg border border-gray-700">
+                <div className="text-center p-4 bg-gray-900/50 backdrop-blur-sm rounded-lg border border-gray-700">
                   <Truck className="w-8 h-8 text-pink-400 mx-auto mb-2" />
                   <p className="text-sm text-gray-300">Envio Seguro</p>
                 </div>
@@ -142,7 +143,7 @@ const PcDetailPage = () => {
 
             {/* Right Column - Details */}
             <div className="space-y-6">
-              <Card className="bg-gray-900 border-gray-700">
+              <Card className="bg-gray-900/80 backdrop-blur-sm border-gray-700">
                 <CardHeader>
                   <CardTitle className="text-3xl font-bold text-cyan-400">
                     {currentPc.name}
@@ -206,10 +207,11 @@ const PcDetailPage = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 px-4 py-8 mt-12">
+      <footer className="relative z-10 border-t border-gray-800 px-4 py-8 mt-12">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-gray-400">
-            Atendimento personalizado via WhatsApp • Montagem em Londrina-PR • Envio para todo Brasil
+            <span className="text-cyan-400 font-semibold">Retirada local</span> em Londrina-PR • 
+            <span className="text-purple-400 font-semibold"> Envio seguro</span> via Sedex para todo Brasil
           </p>
         </div>
       </footer>

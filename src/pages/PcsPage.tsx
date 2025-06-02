@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Cpu, HardDrive, Monitor, Zap } from "lucide-react";
-import { SocialIcons } from "@/components/SocialIcons";
+import { ProductPageBackground } from "@/components/ProductPageBackground";
 
 const PcsPage = () => {
   const navigate = useNavigate();
@@ -36,9 +36,12 @@ const PcsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-black text-white">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+      {/* Product Page Background */}
+      <ProductPageBackground />
+
       {/* Header */}
-      <header className="border-b border-gray-800 px-4 py-6">
+      <header className="relative z-10 border-b border-gray-800 px-4 py-6">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <Button
             onClick={() => navigate('/')}
@@ -48,24 +51,21 @@ const PcsPage = () => {
             <ArrowLeft className="mr-2 h-4 w-4" />
             Voltar
           </Button>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
+          <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-cyan-400 to-purple-500 bg-clip-text text-transparent">
             NOSSOS PC'S GAMER
           </h1>
           <div className="w-20"></div>
         </div>
       </header>
 
-      {/* Social Icons */}
-      <SocialIcons />
-
       {/* PCs Grid */}
-      <main className="px-4 py-12">
+      <main className="relative z-10 px-4 py-12">
         <div className="max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {pcs.map((pc) => (
               <Card
                 key={pc.id}
-                className={`relative bg-gray-900 border-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] ${
+                className={`relative bg-gray-900/80 backdrop-blur-sm border-2 transition-all duration-300 hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] ${
                   pc.highlight 
                     ? 'border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.4)]' 
                     : 'border-gray-700 hover:border-cyan-400'
@@ -128,10 +128,11 @@ const PcsPage = () => {
       </main>
 
       {/* Footer */}
-      <footer className="border-t border-gray-800 px-4 py-8">
+      <footer className="relative z-10 border-t border-gray-800 px-4 py-8">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-gray-400">
-            Entre em contato via WhatsApp para mais detalhes e montagem personalizada
+            <span className="text-cyan-400 font-semibold">Retirada local</span> em Londrina-PR • 
+            <span className="text-purple-400 font-semibold"> Envio seguro</span> via Sedex para todo Brasil
           </p>
         </div>
       </footer>

@@ -1,12 +1,17 @@
 
-import { Facebook, Instagram } from "lucide-react";
+import { Facebook, Instagram, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { useState } from "react";
 
 interface SocialIconsProps {
   variant?: 'floating' | 'footer';
+  showOnProductPages?: boolean;
 }
 
-export const SocialIcons = ({ variant = 'floating' }: SocialIconsProps) => {
+export const SocialIcons = ({ variant = 'floating', showOnProductPages = true }: SocialIconsProps) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   const socialLinks = [
     {
       name: 'WhatsApp',
@@ -50,26 +55,71 @@ export const SocialIcons = ({ variant = 'floating' }: SocialIconsProps) => {
     );
   }
 
+  if (!showOnProductPages) {
+    return null;
+  }
+
   return (
-    <div className="fixed top-6 right-6 z-50 flex flex-col space-y-3">
-      {socialLinks.map((social) => (
-        <Button
-          key={social.name}
-          asChild
-          variant="ghost"
-          size="icon"
-          className={`w-12 h-12 bg-gray-900/80 backdrop-blur-sm border border-gray-700 text-gray-300 transition-all duration-300 ${social.color} hover:bg-gray-800 hover:scale-110 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]`}
-        >
-          <a
-            href={social.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            title={social.name}
+    <>
+      {/* Desktop - Floating Icons */}
+      <div className="hidden md:flex fixed top-6 right-6 z-50 flex-col space-y-3">
+        {socialLinks.map((social) => (
+          <Button
+            key={social.name}
+            asChild
+            variant="ghost"
+            size="icon"
+            className={`w-12 h-12 bg-gray-900/80 backdrop-blur-sm border border-gray-700 text-gray-300 transition-all duration-300 ${social.color} hover:bg-gray-800 hover:scale-110 hover:shadow-[0_0_15px_rgba(34,211,238,0.3)]`}
           >
-            {social.icon}
-          </a>
-        </Button>
-      ))}
-    </div>
+            <a
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              title={social.name}
+            >
+              {social.icon}
+            </a>
+          </Button>
+        ))}
+      </div>
+
+      {/* Mobile - Sidebar */}
+      <div className="md:hidden fixed top-4 right-4 z-50">
+        <Sheet open={isOpen} onOpenChange={setIsOpen}>
+          <SheetTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              className="w-12 h-12 bg-gray-900/80 backdrop-blur-sm border border-gray-700 text-gray-300 hover:bg-gray-800 hover:text-cyan-400"
+            >
+              <Menu className="w-6 h-6" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="top" className="bg-gray-900 border-gray-700">
+            <div className="flex justify-center space-x-6 pt-4">
+              {socialLinks.map((social) => (
+                <Button
+                  key={social.name}
+                  asChild
+                  variant="ghost"
+                  size="icon"
+                  className={`w-12 h-12 bg-gray-800 border border-gray-600 text-gray-300 transition-all duration-300 ${social.color} hover:bg-gray-700`}
+                  onClick={() => setIsOpen(false)}
+                >
+                  <a
+                    href={social.href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    title={social.name}
+                  >
+                    {social.icon}
+                  </a>
+                </Button>
+              ))}
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+    </>
   );
 };
