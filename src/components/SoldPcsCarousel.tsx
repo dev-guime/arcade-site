@@ -112,7 +112,13 @@ export const SoldPcsCarousel = () => {
         
         {/* Desktop Carousel */}
         <div className="hidden md:block relative">
-          <Carousel className="w-full">
+          <Carousel 
+            className="w-full"
+            opts={{
+              align: "start",
+              loop: true,
+            }}
+          >
             <CarouselContent className="-ml-2 md:-ml-4">
               {soldPcs.map((pc) => (
                 <CarouselItem key={pc.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">

@@ -123,7 +123,7 @@ const PcsPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-black text-white relative overflow-hidden">
+    <div className="min-h-screen bg-black text-white relative overflow-hidden flex flex-col">
       {/* Product Page Background */}
       <ProductPageBackground />
 
@@ -146,8 +146,8 @@ const PcsPage = () => {
       </header>
 
       {/* PCs Content */}
-      <main className="relative z-10 px-4 py-4">
-        <div className="max-w-6xl mx-auto">
+      <main className="relative z-10 px-4 py-8 flex-1 flex items-center">
+        <div className="max-w-6xl mx-auto w-full">
           
           {/* Mobile Grid Layout */}
           <div className="block md:hidden">
@@ -313,7 +313,7 @@ const PcsPage = () => {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 border-t border-gray-800 px-4 py-4">
+      <footer className="relative z-10 border-t border-gray-800 px-4 py-8 mt-auto">
         <div className="max-w-6xl mx-auto text-center">
           <p className="text-gray-400 text-sm md:text-base">
             <span className="text-cyan-400 font-semibold">Retirada local</span> em Londrina-PR • 
