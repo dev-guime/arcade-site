@@ -1,4 +1,3 @@
-
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -158,7 +157,7 @@ const PerifericosPage = () => {
   };
 
   const renderProducts = (products: any[]) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
       {products.map((item) => (
         <Card
           key={item.id}
@@ -183,7 +182,7 @@ const PerifericosPage = () => {
           )}
           
           {/* Placeholder Image */}
-          <div className="relative h-40 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center rounded-t-lg mt-2">
+          <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center rounded-t-lg mt-2 mx-2">
             {getIcon(item.name)}
           </div>
           

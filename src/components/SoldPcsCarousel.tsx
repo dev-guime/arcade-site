@@ -56,50 +56,52 @@ export const SoldPcsCarousel = () => {
           </span>
         </h2>
         
-        <Carousel className="w-full">
-          <CarouselContent className="-ml-2 md:-ml-4">
-            {soldPcs.map((pc) => (
-              <CarouselItem key={pc.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
-                <Card className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 hover:border-cyan-400 transition-all duration-300 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)]">
-                  <div className="relative h-48 overflow-hidden rounded-t-lg">
-                    <img 
-                      src={pc.image} 
-                      alt={pc.name}
-                      className="w-full h-full object-cover object-center"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-gray-900 to-transparent opacity-60"></div>
-                    <Badge className="absolute top-2 right-2 bg-green-500 hover:bg-green-600">
-                      ENTREGUE
-                    </Badge>
-                  </div>
-                  
-                  <CardHeader>
-                    <CardTitle className="text-xl font-bold text-cyan-400">
-                      {pc.name}
-                    </CardTitle>
-                    <CardDescription className="text-gray-300">
-                      Cliente: {pc.customer}
-                    </CardDescription>
-                    <p className="text-sm text-gray-400">{pc.description}</p>
-                  </CardHeader>
-                  
-                  <CardContent>
-                    <div className="space-y-2">
-                      {pc.specs.map((spec, index) => (
-                        <div key={index} className="flex items-center text-gray-300 text-sm">
-                          <div className="w-2 h-2 bg-cyan-400 rounded-full mr-2"></div>
-                          <span>{spec}</span>
-                        </div>
-                      ))}
+        <div className="relative">
+          <Carousel className="w-full">
+            <CarouselContent className="-ml-2 md:-ml-4">
+              {soldPcs.map((pc) => (
+                <CarouselItem key={pc.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                  <Card className="bg-gray-900/80 backdrop-blur-sm border border-gray-700 hover:border-cyan-400 transition-all duration-300 hover:shadow-[0_0_20px_rgba(34,211,238,0.3)]">
+                    <div className="relative h-60 overflow-hidden rounded-t-lg">
+                      <img 
+                        src={pc.image} 
+                        alt={pc.name}
+                        className="w-full h-full object-contain bg-gray-800 p-4"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
+                      <Badge className="absolute top-4 right-4 bg-green-500 hover:bg-green-600 text-white font-bold">
+                        ENTREGUE
+                      </Badge>
                     </div>
-                  </CardContent>
-                </Card>
-              </CarouselItem>
-            ))}
-          </CarouselContent>
-          <CarouselPrevious className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black" />
-          <CarouselNext className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black" />
-        </Carousel>
+                    
+                    <CardHeader>
+                      <CardTitle className="text-xl font-bold text-cyan-400">
+                        {pc.name}
+                      </CardTitle>
+                      <CardDescription className="text-gray-300">
+                        Cliente: {pc.customer}
+                      </CardDescription>
+                      <p className="text-sm text-gray-400">{pc.description}</p>
+                    </CardHeader>
+                    
+                    <CardContent>
+                      <div className="space-y-2">
+                        {pc.specs.map((spec, index) => (
+                          <div key={index} className="flex items-center text-gray-300 text-sm">
+                            <div className="w-2 h-2 bg-cyan-400 rounded-full mr-2"></div>
+                            <span>{spec}</span>
+                          </div>
+                        ))}
+                      </div>
+                    </CardContent>
+                  </Card>
+                </CarouselItem>
+              ))}
+            </CarouselContent>
+            <CarouselPrevious className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black -left-16" />
+            <CarouselNext className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black -right-16" />
+          </Carousel>
+        </div>
       </div>
     </section>
   );
