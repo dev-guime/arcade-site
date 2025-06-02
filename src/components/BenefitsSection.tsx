@@ -42,7 +42,7 @@ export const BenefitsSection = () => {
               <div className="text-cyan-400 flex-shrink-0">
                 {benefit.icon}
               </div>
-              <p className="text-gray-200 font-medium">
+              <p className="text-gray-200 font-medium text-left">
                 {benefit.text}
               </p>
             </div>

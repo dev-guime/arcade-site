@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft, Headphones, Keyboard, Mouse, Gamepad2, Monitor, Speaker } from "lucide-react";
+import { ArrowLeft, Headphones, Keyboard, Mouse, Gamepad2, Monitor, Speaker, Webcam, MousePointer, Mic, Camera, Volume2 } from "lucide-react";
 import { ProductPageBackground } from "@/components/ProductPageBackground";
 import { useState } from "react";
 
@@ -75,6 +75,46 @@ const PerifericosPage = () => {
       description: "Mousepad grande com bordas costuradas",
       specs: ["90x40cm", "Base antiderrapante", "Bordas costuradas", "Superfície lisa"],
       highlight: false
+    },
+    {
+      id: 9,
+      name: "MICROFONE STREAM",
+      price: "R$ 359",
+      description: "Microfone profissional para streaming",
+      specs: ["Condensador", "USB plug & play", "Padrão cardioide", "Braço articulado"],
+      highlight: false
+    },
+    {
+      id: 10,
+      name: "CONTROLE WIRELESS",
+      price: "R$ 189",
+      description: "Controle sem fio para PC",
+      specs: ["Bluetooth 5.0", "Vibração dual", "40h bateria", "RGB personalizável"],
+      highlight: false
+    },
+    {
+      id: 11,
+      name: "MONITOR ULTRAWIDE",
+      price: "R$ 1.599",
+      description: "Monitor ultrawide 34' curvo",
+      specs: ["34 polegadas", "100Hz", "1440p", "Curvo"],
+      highlight: false
+    },
+    {
+      id: 12,
+      name: "KIT ILUMINAÇÃO",
+      price: "R$ 129",
+      description: "Kit RGB para setup gamer",
+      specs: ["Fita LED 5m", "Controle remoto", "16 milhões cores", "Sincronização"],
+      highlight: false
+    },
+    {
+      id: 13,
+      name: "COOLER RGB",
+      price: "R$ 89",
+      description: "Cooler com iluminação RGB",
+      specs: ["120mm", "RGB ajustável", "Baixo ruído", "PWM"],
+      highlight: false
     }
   ];
 
@@ -84,7 +124,12 @@ const PerifericosPage = () => {
     if (name.includes("TECLADO")) return <Keyboard className="w-16 h-16 text-pink-400" />;
     if (name.includes("MOUSE") && !name.includes("MOUSEPAD")) return <Mouse className="w-16 h-16 text-pink-400" />;
     if (name.includes("MONITOR")) return <Monitor className="w-16 h-16 text-pink-400" />;
+    if (name.includes("WEBCAM")) return <Camera className="w-16 h-16 text-pink-400" />;
     if (name.includes("CAIXA")) return <Speaker className="w-16 h-16 text-pink-400" />;
+    if (name.includes("MOUSEPAD")) return <MousePointer className="w-16 h-16 text-pink-400" />;
+    if (name.includes("MICROFONE")) return <Mic className="w-16 h-16 text-pink-400" />;
+    if (name.includes("CONTROLE")) return <Gamepad2 className="w-16 h-16 text-pink-400" />;
+    if (name.includes("KIT")) return <Volume2 className="w-16 h-16 text-pink-400" />;
     return <Gamepad2 className="w-16 h-16 text-pink-400" />;
   };
 
@@ -121,7 +166,7 @@ const PerifericosPage = () => {
                   <Card
                     className={`relative bg-gray-900/80 backdrop-blur-sm border-2 transition-all duration-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(236,72,153,0.3)] floating-animation ${
                       item.highlight 
-                        ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.4)]' 
+                        ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.6)]' 
                         : 'border-gray-700 hover:border-pink-400'
                     } ${
                       hoveredId !== null && hoveredId !== item.id 
@@ -132,15 +177,15 @@ const PerifericosPage = () => {
                     onMouseLeave={() => setHoveredId(null)}
                   >
                     {item.highlight && (
-                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
-                        <span className="bg-gradient-to-r from-pink-400 to-orange-500 px-4 py-1 rounded-full text-sm font-bold">
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                        <span className="bg-gradient-to-r from-pink-400 to-orange-500 px-4 py-2 rounded-full text-sm font-bold border-2 border-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.6)]">
                           MAIS VENDIDO
                         </span>
                       </div>
                     )}
                     
                     {/* Placeholder Image */}
-                    <div className="relative h-40 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center rounded-t-lg">
+                    <div className="relative h-40 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center rounded-t-lg mt-2">
                       {getIcon(item.name)}
                     </div>
                     
@@ -177,8 +222,8 @@ const PerifericosPage = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="text-pink-400 border-pink-400 hover:bg-pink-400 hover:text-black" />
-            <CarouselNext className="text-pink-400 border-pink-400 hover:bg-pink-400 hover:text-black" />
+            <CarouselPrevious className="text-pink-400 border-pink-400 hover:bg-pink-400 hover:text-black -left-12" />
+            <CarouselNext className="text-pink-400 border-pink-400 hover:bg-pink-400 hover:text-black -right-12" />
           </Carousel>
         </div>
       </main>

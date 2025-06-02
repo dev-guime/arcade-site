@@ -59,6 +59,46 @@ const PcsPage = () => {
       description: "Perfeito para streaming e criação de conteúdo",
       specs: ["Ryzen 7 5700X", "32GB DDR4", "SSD 1TB", "RTX 3070"],
       highlight: false
+    },
+    {
+      id: 7,
+      name: "WORKSTATION PRO",
+      price: "R$ 8.999",
+      description: "Potência máxima para profissionais",
+      specs: ["Ryzen 9 5950X", "64GB DDR4", "SSD 4TB", "RTX 4090"],
+      highlight: false
+    },
+    {
+      id: 8,
+      name: "GAMER COMPACT",
+      price: "R$ 3.199",
+      description: "Performance em tamanho compacto",
+      specs: ["Ryzen 5 5600G", "16GB DDR4", "SSD 1TB", "RTX 3060"],
+      highlight: false
+    },
+    {
+      id: 9,
+      name: "CREATOR STUDIO",
+      price: "R$ 7.599",
+      description: "Ideal para edição e renderização",
+      specs: ["Ryzen 9 5900X", "64GB DDR4", "SSD 2TB + HDD 4TB", "RTX 4070 Ti"],
+      highlight: false
+    },
+    {
+      id: 10,
+      name: "BUDGET GAMER",
+      price: "R$ 1.999",
+      description: "Entrada no mundo gamer",
+      specs: ["Ryzen 3 4300G", "8GB DDR4", "SSD 480GB", "GTX 1650"],
+      highlight: false
+    },
+    {
+      id: 11,
+      name: "ENTHUSIAST EXTREME",
+      price: "R$ 12.999",
+      description: "O máximo em tecnologia",
+      specs: ["Ryzen 9 7950X", "128GB DDR5", "SSD 8TB", "RTX 4090 Ti"],
+      highlight: false
     }
   ];
 
@@ -95,7 +135,7 @@ const PcsPage = () => {
                   <Card
                     className={`relative bg-gray-900/80 backdrop-blur-sm border-2 transition-all duration-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] floating-animation ${
                       pc.highlight 
-                        ? 'border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.4)]' 
+                        ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.6)]' 
                         : 'border-gray-700 hover:border-cyan-400'
                     } ${
                       hoveredId !== null && hoveredId !== pc.id 
@@ -106,15 +146,15 @@ const PcsPage = () => {
                     onMouseLeave={() => setHoveredId(null)}
                   >
                     {pc.highlight && (
-                      <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-20">
-                        <span className="bg-gradient-to-r from-cyan-400 to-purple-500 px-4 py-1 rounded-full text-sm font-bold">
+                      <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
+                        <span className="bg-gradient-to-r from-pink-400 to-purple-500 px-4 py-2 rounded-full text-sm font-bold border-2 border-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.6)]">
                           MAIS VENDIDO
                         </span>
                       </div>
                     )}
                     
                     {/* PC Image */}
-                    <div className="relative h-48 overflow-hidden rounded-t-lg">
+                    <div className="relative h-48 overflow-hidden rounded-t-lg mt-2">
                       <img 
                         src="/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png" 
                         alt={pc.name}
@@ -159,8 +199,8 @@ const PcsPage = () => {
                 </CarouselItem>
               ))}
             </CarouselContent>
-            <CarouselPrevious className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black" />
-            <CarouselNext className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black" />
+            <CarouselPrevious className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black -left-12" />
+            <CarouselNext className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black -right-12" />
           </Carousel>
         </div>
       </main>
