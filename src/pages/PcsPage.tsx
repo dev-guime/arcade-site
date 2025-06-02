@@ -1,14 +1,27 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "@/components/ui/carousel";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Cpu, HardDrive, Monitor, Zap } from "lucide-react";
 import { ProductPageBackground } from "@/components/ProductPageBackground";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 const PcsPage = () => {
   const navigate = useNavigate();
   const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [borderColors, setBorderColors] = useState<{[key: number]: string}>({});
+
+  const colors = [
+    'border-green-400 shadow-[0_0_30px_rgba(34,197,94,0.3)]',
+    'border-pink-400 shadow-[0_0_30px_rgba(236,72,153,0.3)]',
+    'border-red-400 shadow-[0_0_30px_rgba(248,113,113,0.3)]',
+    'border-blue-400 shadow-[0_0_30px_rgba(96,165,250,0.3)]',
+    'border-purple-400 shadow-[0_0_30px_rgba(168,85,247,0.3)]',
+    'border-yellow-400 shadow-[0_0_30px_rgba(251,191,36,0.3)]',
+    'border-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.3)]',
+    'border-orange-400 shadow-[0_0_30px_rgba(251,146,60,0.3)]'
+  ];
 
   const pcs = [
     {
@@ -101,6 +114,14 @@ const PcsPage = () => {
     }
   ];
 
+  useEffect(() => {
+    const newBorderColors: {[key: number]: string} = {};
+    pcs.forEach(pc => {
+      newBorderColors[pc.id] = colors[Math.floor(Math.random() * colors.length)];
+    });
+    setBorderColors(newBorderColors);
+  }, []);
+
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Product Page Background */}
@@ -126,8 +147,8 @@ const PcsPage = () => {
 
       {/* PCs Carousel */}
       <main className="relative z-10 px-4 py-12">
-        <div className="max-w-7xl mx-auto">
-          <div className="relative px-16">
+        <div className="max-w-6xl mx-auto">
+          <div className="relative px-20">
             <Carousel 
               className="w-full"
               opts={{
@@ -137,12 +158,14 @@ const PcsPage = () => {
             >
               <CarouselContent className="-ml-2 md:-ml-4">
                 {pcs.map((pc) => (
-                  <CarouselItem key={pc.id} className="pl-2 md:pl-4 md:basis-1/2 lg:basis-1/3">
+                  <CarouselItem key={pc.id} className="pl-2 md:pl-4 basis-full md:basis-1/2 lg:basis-1/3">
                     <Card
-                      className={`relative bg-gray-900/80 backdrop-blur-sm border-2 transition-all duration-500 hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.3)] floating-animation ${
+                      className={`relative bg-gray-900/80 backdrop-blur-sm border-2 transition-all duration-500 hover:scale-105 floating-animation ${
                         pc.highlight 
                           ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.6)]' 
-                          : 'border-gray-700 hover:border-cyan-400'
+                          : hoveredId === pc.id 
+                            ? borderColors[pc.id] || 'border-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.3)]'
+                            : 'border-gray-700'
                       } ${
                         hoveredId !== null && hoveredId !== pc.id 
                           ? 'opacity-30 scale-95' 
@@ -160,35 +183,35 @@ const PcsPage = () => {
                       )}
                       
                       {/* PC Image */}
-                      <div className="relative h-60 overflow-hidden rounded-t-lg mt-2">
+                      <div className="relative h-48 overflow-hidden rounded-t-lg mt-2">
                         <img 
                           src="/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png" 
                           alt={pc.name}
-                          className="w-full h-full object-contain bg-gray-800 p-4"
+                          className="w-full h-full object-contain bg-gray-800 p-2"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
                       </div>
                       
-                      <CardHeader>
-                        <CardTitle className="text-2xl font-bold text-cyan-400">
+                      <CardHeader className="pb-4">
+                        <CardTitle className="text-xl font-bold text-cyan-400">
                           {pc.name}
                         </CardTitle>
-                        <CardDescription className="text-gray-300">
+                        <CardDescription className="text-gray-300 text-sm">
                           {pc.description}
                         </CardDescription>
-                        <div className="text-3xl font-bold text-white">
+                        <div className="text-2xl font-bold text-white">
                           {pc.price}
                         </div>
                       </CardHeader>
                       
-                      <CardContent>
-                        <div className="space-y-3 mb-6">
+                      <CardContent className="pt-0">
+                        <div className="space-y-2 mb-4">
                           {pc.specs.map((spec, index) => (
-                            <div key={index} className="flex items-center text-gray-300">
-                              {index === 0 && <Cpu className="mr-2 h-4 w-4 text-cyan-400" />}
-                              {index === 1 && <Zap className="mr-2 h-4 w-4 text-cyan-400" />}
-                              {index === 2 && <HardDrive className="mr-2 h-4 w-4 text-cyan-400" />}
-                              {index === 3 && <Monitor className="mr-2 h-4 w-4 text-cyan-400" />}
+                            <div key={index} className="flex items-center text-gray-300 text-sm">
+                              {index === 0 && <Cpu className="mr-2 h-3 w-3 text-cyan-400" />}
+                              {index === 1 && <Zap className="mr-2 h-3 w-3 text-cyan-400" />}
+                              {index === 2 && <HardDrive className="mr-2 h-3 w-3 text-cyan-400" />}
+                              {index === 3 && <Monitor className="mr-2 h-3 w-3 text-cyan-400" />}
                               <span>{spec}</span>
                             </div>
                           ))}
@@ -196,7 +219,7 @@ const PcsPage = () => {
                         
                         <Button 
                           onClick={() => navigate(`/pc/${pc.id}`)}
-                          className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 border border-cyan-400 transition-all duration-300"
+                          className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 border border-cyan-400 transition-all duration-300 text-sm py-2"
                         >
                           QUERO ESTE PC
                         </Button>
@@ -205,8 +228,8 @@ const PcsPage = () => {
                   </CarouselItem>
                 ))}
               </CarouselContent>
-              <CarouselPrevious className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black -left-12" />
-              <CarouselNext className="text-cyan-400 border-cyan-400 hover:bg-cyan-400 hover:text-black -right-12" />
+              <CarouselPrevious className="text-white bg-gradient-to-r from-cyan-500 to-purple-600 border-2 border-cyan-400 hover:from-cyan-400 hover:to-purple-500 hover:border-purple-400 -left-16 w-12 h-12 shadow-[0_0_20px_rgba(34,211,238,0.5)] transition-all duration-300" />
+              <CarouselNext className="text-white bg-gradient-to-r from-cyan-500 to-purple-600 border-2 border-cyan-400 hover:from-cyan-400 hover:to-purple-500 hover:border-purple-400 -right-16 w-12 h-12 shadow-[0_0_20px_rgba(34,211,238,0.5)] transition-all duration-300" />
             </Carousel>
           </div>
         </div>
