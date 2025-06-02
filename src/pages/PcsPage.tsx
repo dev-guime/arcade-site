@@ -1,4 +1,3 @@
-
 import { ProductPageBackground } from "@/components/ProductPageBackground";
 import { PcsHeader } from "@/components/PcsHeader";
 import { PcsFooter } from "@/components/PcsFooter";
@@ -22,17 +21,31 @@ const PcsPage = () => {
   // Separar PCs por categoria baseado no preço
   const pcsCategories = {
     essencial: allPcs.filter(pc => {
-      const price = parseInt(pc.price.replace('R$ ', '').replace('.', ''));
+      const price = typeof pc.price === 'string' ? 
+        parseInt(pc.price.replace('R$ ', '').replace('.', '')) : 
+        pc.price;
       return price <= 2500;
     }),
     performance: allPcs.filter(pc => {
-      const price = parseInt(pc.price.replace('R$ ', '').replace('.', ''));
+      const price = typeof pc.price === 'string' ? 
+        parseInt(pc.price.replace('R$ ', '').replace('.', '')) : 
+        pc.price;
       return price > 2500 && price <= 5000;
     }),
     avancada: allPcs.filter(pc => {
-      const price = parseInt(pc.price.replace('R$ ', '').replace('.', ''));
+      const price = typeof pc.price === 'string' ? 
+        parseInt(pc.price.replace('R$ ', '').replace('.', '')) : 
+        pc.price;
       return price > 5000;
     })
+  };
+
+  const formatPrice = (price: string | number) => {
+    if (typeof price === 'string') return price;
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(price);
   };
 
   const renderProducts = (products: any[]) => (
@@ -52,10 +65,10 @@ const PcsPage = () => {
           onMouseEnter={() => setHoveredId(pc.id)}
           onMouseLeave={() => setHoveredId(null)}
         >
-          {pc.highlight && (
+          {pc.highlight && pc.highlight_text && (
             <div className="absolute -top-3 md:-top-4 left-1/2 transform -translate-x-1/2 z-20">
               <span className="bg-gradient-to-r from-cyan-400 to-purple-500 px-2 py-1 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-bold border-2 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.6)]">
-                MAIS VENDIDO
+                {pc.highlight_text}
               </span>
             </div>
           )}
@@ -63,7 +76,7 @@ const PcsPage = () => {
           {/* PC Image */}
           <div className="relative h-32 md:h-48 overflow-hidden rounded-t-lg mt-2 mx-2 flex-shrink-0">
             <img 
-              src="/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png" 
+              src={pc.image || "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png"} 
               alt={pc.name}
               className="w-full h-full object-contain bg-gray-800 p-2"
             />
@@ -78,13 +91,13 @@ const PcsPage = () => {
               {pc.description}
             </CardDescription>
             <div className="text-lg md:text-2xl font-bold text-white">
-              {pc.price}
+              {formatPrice(pc.price)}
             </div>
           </CardHeader>
           
           <CardContent className="pt-0 flex-1 flex flex-col">
             <div className="space-y-1 md:space-y-2 mb-3 md:mb-6 flex-1">
-              {pc.specs.slice(0, 4).map((spec: string, index: number) => (
+              {pc.specs && pc.specs.slice(0, 4).map((spec: string, index: number) => (
                 <div key={index} className="flex items-center text-gray-300 text-xs md:text-sm">
                   {index === 0 && <Cpu className="mr-2 h-3 w-3 text-cyan-400 flex-shrink-0" />}
                   {index === 1 && <Zap className="mr-2 h-3 w-3 text-cyan-400 flex-shrink-0" />}
@@ -124,19 +137,19 @@ const PcsPage = () => {
                 value="essencial" 
                 className="data-[state=active]:bg-cyan-400 data-[state=active]:text-black text-xs md:text-sm px-2 py-2 md:py-3"
               >
-                <span className="hidden sm:inline">Linha </span>Essencial
+                Linha Essencial
               </TabsTrigger>
               <TabsTrigger 
                 value="performance" 
                 className="data-[state=active]:bg-cyan-400 data-[state=active]:text-black text-xs md:text-sm px-2 py-2 md:py-3"
               >
-                <span className="hidden sm:inline">Linha </span>Performance
+                Linha Performance
               </TabsTrigger>
               <TabsTrigger 
                 value="avancada" 
                 className="data-[state=active]:bg-cyan-400 data-[state=active]:text-black text-xs md:text-sm px-2 py-2 md:py-3"
               >
-                <span className="hidden sm:inline">Linha </span>Avançada
+                Linha Avançada
               </TabsTrigger>
             </TabsList>
             
