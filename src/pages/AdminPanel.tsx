@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
-import { AdminPcForm } from "@/components/admin/AdminPcForm";
+import { PcsList } from "@/components/admin/PcsList";
 import { AdminPerifericosForm } from "@/components/admin/AdminPerifericosForm";
 import { ProductList } from "@/components/admin/ProductList";
 import { AdminLayout } from "@/components/admin/AdminLayout";
@@ -28,15 +28,10 @@ const AdminPanel = () => {
       case "dashboard":
         return <AdminDashboard />;
       case "pcs":
-        return (
-          <div className="p-6 space-y-6">
-            <AdminPcForm />
-            <ProductList type="pcs" />
-          </div>
-        );
+        return <PcsList />;
       case "perifericos":
         return (
-          <div className="p-6 space-y-6">
+          <div className="space-y-6">
             <AdminPerifericosForm />
             <ProductList type="perifericos" />
           </div>
