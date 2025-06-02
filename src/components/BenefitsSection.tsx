@@ -32,9 +32,7 @@ export const BenefitsSection = () => {
         <div className="grid md:grid-cols-2 gap-6">
           {benefits.map((benefit, index) => <div key={index} className="flex items-start space-x-4 p-4 bg-gray-900/50 border border-gray-700 backdrop-blur-sm hover:border-cyan-400 transition-all duration-300 hover:shadow-[0_0_15px_rgba(34,211,238,0.2)] rounded-lg px-[13px] mx-[27px]">
               <div className="flex-shrink-0">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-r from-cyan-500 to-purple-600 flex items-center justify-center">
-                  <Check className="w-5 h-5 text-white" />
-                </div>
+                
               </div>
               <div className="flex items-center space-x-3">
                 <div className="text-cyan-400">
