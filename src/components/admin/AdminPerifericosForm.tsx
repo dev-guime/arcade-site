@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -6,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Plus, Upload, X, Gamepad2, Headphones, Keyboard, Monitor, Cpu } from "lucide-react";
+import { Plus, X, Gamepad2, Headphones, Keyboard, Monitor, Cpu } from "lucide-react";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useToast } from "@/hooks/use-toast";
 
@@ -25,9 +24,10 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
   const [secondaryImages, setSecondaryImages] = useState<string[]>(editingProduct?.secondaryImages || []);
   const [formData, setFormData] = useState({
     name: editingProduct?.name || "",
-    price: editingProduct?.price || "",
+    price: editingProduct?.price || 0,
     description: editingProduct?.description || "",
     highlight: editingProduct?.highlight || false,
+    highlight_text: editingProduct?.highlight_text || "",
   });
   const [currentCategory, setCurrentCategory] = useState("combos");
 
@@ -62,9 +62,10 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
   const resetForm = () => {
     setFormData({
       name: "",
-      price: "",
+      price: 0,
       description: "",
       highlight: false,
+      highlight_text: "",
     });
     setSpecs([""]);
     setMainImage("/placeholder.svg");
@@ -121,7 +122,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
   };
 
   const renderForm = (category: string) => (
-    <Card className="bg-gray-900/50 border-gray-700">
+    <Card className="bg-gray-800/50 border-gray-600 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-pink-400 flex items-center">
           <Gamepad2 className="w-5 h-5 mr-2" />
@@ -146,12 +147,15 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
               </div>
 
               <div>
-                <Label htmlFor="price" className="text-gray-300">Preço *</Label>
+                <Label htmlFor="price" className="text-gray-300">Preço (R$) *</Label>
                 <Input
                   id="price"
-                  placeholder="Ex: R$ 299"
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  placeholder="Ex: 299.99"
                   value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: e.target.value})}
+                  onChange={(e) => setFormData({...formData, price: parseFloat(e.target.value) || 0})}
                   className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
                   required
                 />
@@ -165,8 +169,21 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
                   onChange={(e) => setFormData({...formData, highlight: e.target.checked})}
                   className="rounded border-gray-600 bg-gray-800"
                 />
-                <Label htmlFor="highlight" className="text-gray-300">Destacar como "Mais Vendido"</Label>
+                <Label htmlFor="highlight" className="text-gray-300">Destacar produto</Label>
               </div>
+
+              {formData.highlight && (
+                <div>
+                  <Label htmlFor="highlight_text" className="text-gray-300">Destacar como:</Label>
+                  <Input
+                    id="highlight_text"
+                    placeholder="Ex: Mais Vendido, Recomendado, etc."
+                    value={formData.highlight_text}
+                    onChange={(e) => setFormData({...formData, highlight_text: e.target.value})}
+                    className="bg-gray-800 border-gray-600 text-white placeholder:text-gray-400"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="space-y-4">
@@ -249,7 +266,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
 
   return (
     <Tabs defaultValue="combos" className="w-full" onValueChange={setCurrentCategory}>
-      <TabsList className="grid w-full grid-cols-5 bg-gray-800 border border-gray-700 mb-6">
+      <TabsList className="grid w-full grid-cols-5 bg-gray-800/50 border border-gray-600 mb-6">
         <TabsTrigger value="combos" className="data-[state=active]:bg-pink-400 data-[state=active]:text-black">
           <Gamepad2 className="w-4 h-4 mr-1" />
           Combos

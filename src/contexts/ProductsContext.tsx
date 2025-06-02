@@ -1,29 +1,6 @@
 
 import React, { createContext, useContext, useState, ReactNode } from 'react';
-
-interface Pc {
-  id: number;
-  name: string;
-  price: string;
-  category: string;
-  description: string;
-  specs: string[];
-  highlight: boolean;
-  image?: string;
-  secondaryImages?: string[];
-}
-
-interface Periferico {
-  id: number;
-  name: string;
-  price: string;
-  category: string;
-  description?: string;
-  specs?: string[];
-  highlight: boolean;
-  image?: string;
-  secondaryImages?: string[];
-}
+import { Pc, Periferico } from '@/types/database';
 
 interface ProductsContextType {
   pcs: Pc[];
@@ -52,15 +29,16 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
     {
       id: 1,
       name: "Headset Gamer RGB Pro",
-      price: "R$ 299",
+      price: 299,
       category: "Áudio",
       highlight: true,
+      highlight_text: "Mais Vendido",
       image: "/placeholder.svg"
     },
     {
       id: 2,
       name: "Controle Wireless Elite",
-      price: "R$ 199",
+      price: 199,
       category: "Controles",
       highlight: false,
       image: "/placeholder.svg"
@@ -68,15 +46,16 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
     {
       id: 3,
       name: "Monitor Gamer 27' 144Hz",
-      price: "R$ 899",
+      price: 899,
       category: "Vídeo",
       highlight: true,
+      highlight_text: "Recomendado",
       image: "/placeholder.svg"
     },
     {
       id: 4,
       name: "Kit Teclado + Mouse RGB",
-      price: "R$ 159",
+      price: 159,
       category: "Setup",
       highlight: false,
       image: "/placeholder.svg"

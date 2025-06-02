@@ -23,6 +23,13 @@ export const ProductList = ({ type }: ProductListProps) => {
   const products = type === "pcs" ? pcs : perifericos;
   const colorScheme = type === "pcs" ? "cyan" : "pink";
 
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(price);
+  };
+
   const handleView = (productId: number) => {
     if (type === "pcs") {
       navigate(`/pc/${productId}`);
@@ -66,7 +73,7 @@ export const ProductList = ({ type }: ProductListProps) => {
 
   return (
     <>
-      <Card className="bg-gray-900/50 border-gray-700">
+      <Card className="bg-gray-800/50 border-gray-600 backdrop-blur-sm">
         <CardHeader>
           <CardTitle className={`text-${colorScheme}-400`}>
             Lista de {type === "pcs" ? "PCs" : "Periféricos"} ({products.length} produtos)
@@ -77,7 +84,7 @@ export const ProductList = ({ type }: ProductListProps) => {
             {products.map((product) => (
               <div
                 key={product.id}
-                className="flex items-center justify-between p-4 bg-gray-800/50 rounded-lg border border-gray-700 hover:border-gray-600 transition-colors"
+                className="flex items-center justify-between p-4 bg-gray-700/50 rounded-lg border border-gray-600 hover:border-gray-500 transition-colors"
               >
                 <div className="flex items-center space-x-4">
                   <img
@@ -89,10 +96,10 @@ export const ProductList = ({ type }: ProductListProps) => {
                     <h3 className="text-white font-semibold">{product.name}</h3>
                     <p className="text-gray-400">{product.category}</p>
                     <div className="flex items-center space-x-2 mt-1">
-                      <span className="text-white font-bold">{product.price}</span>
+                      <span className="text-white font-bold">{formatPrice(product.price)}</span>
                       {product.highlight && (
                         <Badge className={`bg-${colorScheme}-500/20 text-${colorScheme}-400 border-${colorScheme}-500/30`}>
-                          Em Destaque
+                          {product.highlight_text || "Em Destaque"}
                         </Badge>
                       )}
                     </div>
