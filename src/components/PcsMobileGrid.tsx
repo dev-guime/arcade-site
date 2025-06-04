@@ -3,16 +3,17 @@ import { PcCard } from "@/components/PcCard";
 
 interface PcsMobileGridProps {
   pcs: Array<{
-    id: number;
+    id: string;
     name: string;
-    price: string;
+    price: string | number;
     description: string;
     specs: string[];
     highlight: boolean;
+    image?: string;
   }>;
-  hoveredId: number | null;
-  borderColors: {[key: number]: string};
-  setHoveredId: (id: number | null) => void;
+  hoveredId: string | null;
+  borderColors: {[key: string]: string};
+  setHoveredId: (id: string | null) => void;
 }
 
 export const PcsMobileGrid = ({ pcs, hoveredId, borderColors, setHoveredId }: PcsMobileGridProps) => {

@@ -3,8 +3,9 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Edit, Trash2, Plus, Package } from "lucide-react";
+import { Eye, Edit, Trash2, Plus, Package, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { AddExampleForm } from "./AddExampleForm";
 
 interface DeliveredPc {
   id: string;
@@ -37,6 +38,7 @@ export const ExamplesManagement = () => {
     }
   ]);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [editingPc, setEditingPc] = useState<DeliveredPc | null>(null);
 
   const handleDelete = (id: string) => {
     if (confirm("Tem certeza que deseja remover este exemplo?")) {
@@ -48,32 +50,33 @@ export const ExamplesManagement = () => {
     }
   };
 
+  const handleAddExample = (data: any) => {
+    setDeliveredPcs(prev => [...prev, data]);
+    setShowAddForm(false);
+  };
+
+  const handleViewOnSite = (pc: DeliveredPc) => {
+    // Simular visualização no site - pode ser implementado como modal ou página
+    toast({
+      title: "Visualizar no Site",
+      description: `Visualizando ${pc.name} no site...`,
+    });
+  };
+
+  const handleEdit = (pc: DeliveredPc) => {
+    setEditingPc(pc);
+    toast({
+      title: "Modo de Edição",
+      description: "Funcionalidade de edição em desenvolvimento...",
+    });
+  };
+
   if (showAddForm) {
     return (
-      <div className="p-6">
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-            Adicionar Novo Exemplo
-          </h2>
-          <Button
-            onClick={() => setShowAddForm(false)}
-            variant="outline"
-            className="border-slate-600 text-slate-300 hover:bg-slate-800 bg-transparent"
-          >
-            Voltar à Lista
-          </Button>
-        </div>
-        
-        <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50">
-          <CardContent className="p-6">
-            <div className="text-center py-12 text-slate-400">
-              <Package className="w-16 h-16 mx-auto mb-4 text-slate-600" />
-              <p className="text-lg">Formulário em desenvolvimento</p>
-              <p className="text-sm">Em breve você poderá adicionar novos exemplos aqui.</p>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <AddExampleForm 
+        onBack={() => setShowAddForm(false)}
+        onSubmit={handleAddExample}
+      />
     );
   }
 
@@ -104,7 +107,7 @@ export const ExamplesManagement = () => {
               >
                 <div className="flex items-center space-x-4">
                   <img
-                    src={pc.image || "/placeholder.svg"}
+                    src={pc.image || "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png"}
                     alt={pc.name}
                     className="w-16 h-16 object-cover rounded-lg bg-slate-700 border border-slate-600"
                   />
@@ -133,13 +136,15 @@ export const ExamplesManagement = () => {
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={() => handleViewOnSite(pc)}
                     className="border-blue-500/50 text-blue-400 hover:bg-blue-500/20 hover:border-blue-400 bg-transparent"
                   >
-                    <Eye className="w-4 h-4" />
+                    <ExternalLink className="w-4 h-4" />
                   </Button>
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={() => handleEdit(pc)}
                     className="border-green-500/50 text-green-400 hover:bg-green-500/20 hover:border-green-400 bg-transparent"
                   >
                     <Edit className="w-4 h-4" />

@@ -1,394 +1,292 @@
+
 import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { 
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Plus, X, Cpu, HardDrive, Zap, Monitor, MemoryStick, Fan, Gamepad2 } from "lucide-react";
-import { useProducts } from "@/contexts/ProductsContext";
+import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { useToast } from "@/hooks/use-toast";
+import { useProducts } from "@/contexts/ProductsContext";
 import { ImageUploadButton } from "./ImageUploadButton";
+import { Computer } from "lucide-react";
 
-const iconOptions = [
-  { value: "cpu", label: "Processador", icon: Cpu },
-  { value: "memory", label: "Memória RAM", icon: MemoryStick },
-  { value: "storage", label: "Armazenamento", icon: HardDrive },
-  { value: "gpu", label: "Placa de Vídeo", icon: Monitor },
-  { value: "power", label: "Fonte", icon: Zap },
-  { value: "cooling", label: "Refrigeração", icon: Fan },
-  { value: "other", label: "Outros", icon: Gamepad2 },
+const pcSchema = z.object({
+  name: z.string().min(1, "Nome é obrigatório"),
+  price: z.number().min(0, "Preço deve ser maior que 0"),
+  category: z.string().min(1, "Categoria é obrigatória"),
+  description: z.string().min(1, "Descrição é obrigatória"),
+  specs: z.string().min(1, "Especificações são obrigatórias"),
+  highlight: z.boolean().default(false),
+  highlight_text: z.string().optional(),
+  highlight_color: z.string().optional(),
+  image: z.string().optional(),
+});
+
+type PcFormData = z.infer<typeof pcSchema>;
+
+const highlightColors = [
+  { value: "cyan", label: "Ciano", color: "border-cyan-400" },
+  { value: "pink", label: "Rosa", color: "border-pink-400" },
+  { value: "green", label: "Verde", color: "border-green-400" },
+  { value: "red", label: "Vermelho", color: "border-red-400" },
+  { value: "purple", label: "Roxo", color: "border-purple-400" },
+  { value: "yellow", label: "Amarelo", color: "border-yellow-400" },
+  { value: "blue", label: "Azul", color: "border-blue-400" },
 ];
 
-interface PcFormProps {
-  editingPc?: any;
-  onSubmit?: (data: any) => void;
-  onCancel?: () => void;
-}
-
-export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
-  const { addPc, updatePc } = useProducts();
+export const AdminPcForm = () => {
   const { toast } = useToast();
-  
-  const [specs, setSpecs] = useState<Array<{value: string, icon: string}>>(() => {
-    if (editingPc?.specs) {
-      return editingPc.specs.map((spec: string, index: number) => ({
-        value: spec,
-        icon: editingPc.spec_icons?.[index] || "cpu"
-      }));
-    }
-    return [{ value: "", icon: "cpu" }];
-  });
-  
-  const [mainImage, setMainImage] = useState<string>(editingPc?.image || "");
-  const [secondaryImages, setSecondaryImages] = useState<string[]>(editingPc?.secondary_images || []);
-  const [formData, setFormData] = useState({
-    name: editingPc?.name || "",
-    price: editingPc?.price || "",
-    category: editingPc?.category || "",
-    description: editingPc?.description || "",
-    highlight: editingPc?.highlight || false,
-    highlight_text: editingPc?.highlight_text || "",
-  });
+  const { addPc } = useProducts();
+  const [image, setImage] = useState<string>("");
 
-  const addSpec = () => {
-    setSpecs([...specs, { value: "", icon: "cpu" }]);
-  };
-
-  const removeSpec = (index: number) => {
-    setSpecs(specs.filter((_, i) => i !== index));
-  };
-
-  const updateSpec = (index: number, field: string, value: string) => {
-    const newSpecs = [...specs];
-    newSpecs[index] = { ...newSpecs[index], [field]: value };
-    setSpecs(newSpecs);
-  };
-
-  const addSecondaryImage = () => {
-    setSecondaryImages([...secondaryImages, ""]);
-  };
-
-  const removeSecondaryImage = (index: number) => {
-    setSecondaryImages(secondaryImages.filter((_, i) => i !== index));
-  };
-
-  const updateSecondaryImage = (index: number, value: string) => {
-    const newImages = [...secondaryImages];
-    newImages[index] = value;
-    setSecondaryImages(newImages);
-  };
-
-  const resetForm = () => {
-    setFormData({
+  const form = useForm<PcFormData>({
+    resolver: zodResolver(pcSchema),
+    defaultValues: {
       name: "",
-      price: "",
+      price: 0,
       category: "",
       description: "",
+      specs: "",
       highlight: false,
       highlight_text: "",
-    });
-    setSpecs([{ value: "", icon: "cpu" }]);
-    setMainImage("");
-    setSecondaryImages([]);
-  };
+      highlight_color: "cyan",
+      image: "",
+    },
+  });
 
-  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    const numericValue = value.replace(/[^0-9.]/g, '');
-    setFormData({...formData, price: numericValue});
-  };
+  const isHighlighted = form.watch("highlight");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    
-    if (!formData.name || !formData.price || !formData.category) {
+  const handleSubmit = async (data: PcFormData) => {
+    try {
+      const specsArray = data.specs.split('\n').filter(spec => spec.trim() !== '');
+      
+      const pcData = {
+        ...data,
+        specs: specsArray,
+        spec_icons: [],
+        secondary_images: [],
+        image: image || undefined,
+        highlight_text: data.highlight ? data.highlight_text : undefined,
+        highlight_color: data.highlight ? data.highlight_color : undefined,
+      };
+
+      await addPc(pcData);
+      
+      toast({
+        title: "Sucesso!",
+        description: "PC adicionado com sucesso!",
+      });
+
+      form.reset();
+      setImage("");
+    } catch (error) {
+      console.error('Error adding PC:', error);
       toast({
         title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios.",
+        description: "Erro ao adicionar PC. Tente novamente.",
         variant: "destructive",
       });
-      return;
     }
-
-    try {
-      const data = {
-        ...formData,
-        price: parseFloat(formData.price),
-        image: mainImage,
-        secondary_images: secondaryImages.filter(Boolean),
-        specs: specs.map(spec => spec.value).filter(Boolean),
-        spec_icons: specs.map(spec => spec.icon),
-      };
-      
-      if (onSubmit) {
-        onSubmit(data);
-      } else if (editingPc) {
-        await updatePc(editingPc.id, data);
-        toast({
-          title: "Sucesso!",
-          description: "PC atualizado com sucesso!",
-        });
-      } else {
-        await addPc(data);
-        toast({
-          title: "Sucesso!",
-          description: "PC adicionado com sucesso!",
-        });
-        resetForm();
-      }
-    } catch (error) {
-      // Error handling is done in the context
-    }
-  };
-
-  const getIconComponent = (iconType: string) => {
-    const iconOption = iconOptions.find(opt => opt.value === iconType);
-    return iconOption ? iconOption.icon : Cpu;
   };
 
   return (
-    <Card className="bg-gray-800 border-gray-700">
+    <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50">
       <CardHeader>
-        <CardTitle className="text-cyan-400 flex items-center">
-          <Cpu className="w-5 h-5 mr-2" />
-          {editingPc ? "Editar PC" : "Adicionar Novo PC"}
+        <CardTitle className="text-cyan-400 flex items-center gap-2">
+          <Computer className="w-5 h-5" />
+          Adicionar Novo PC
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Informações Básicas */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name" className="text-gray-300">Nome do PC *</Label>
-                <Input
-                  id="name"
-                  placeholder="Ex: PC Gamer RGB Pro"
-                  value={formData.name}
-                  onChange={(e) => setFormData({...formData, name: e.target.value})}
-                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="price" className="text-gray-300">Preço (R$) *</Label>
-                <Input
-                  id="price"
-                  type="text"
-                  placeholder="Ex: 2499.99"
-                  value={formData.price}
-                  onChange={handlePriceChange}
-                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="category" className="text-gray-300">Categoria *</Label>
-                <Select value={formData.category} onValueChange={(value) => setFormData({...formData, category: value})}>
-                  <SelectTrigger className="bg-gray-700 border-gray-600 text-white">
-                    <SelectValue placeholder="Selecione a linha" />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-600">
-                    <SelectItem value="Linha Essencial">Linha Essencial</SelectItem>
-                    <SelectItem value="Linha Performance">Linha Performance</SelectItem>
-                    <SelectItem value="Linha Avançada">Linha Avançada</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="flex items-center space-x-2">
-                <input
-                  type="checkbox"
-                  id="highlight"
-                  checked={formData.highlight}
-                  onChange={(e) => setFormData({...formData, highlight: e.target.checked})}
-                  className="rounded border-gray-600 bg-gray-700"
-                />
-                <Label htmlFor="highlight" className="text-gray-300">Destacar produto</Label>
-              </div>
-
-              {formData.highlight && (
-                <div>
-                  <Label htmlFor="highlight_text" className="text-gray-300">Destacar como:</Label>
-                  <Input
-                    id="highlight_text"
-                    placeholder="Ex: Mais Vendido, Recomendado, etc."
-                    value={formData.highlight_text}
-                    onChange={(e) => setFormData({...formData, highlight_text: e.target.value})}
-                    className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                  />
-                </div>
-              )}
-            </div>
-
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="description" className="text-gray-300">Descrição</Label>
-                <Textarea
-                  id="description"
-                  placeholder="Descrição detalhada do PC..."
-                  value={formData.description}
-                  onChange={(e) => setFormData({...formData, description: e.target.value})}
-                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400 min-h-[120px]"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Upload de Imagens */}
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">Imagens do Produto</h3>
-            
-            {/* Imagem Principal */}
-            <div className="space-y-2">
-              <Label className="text-gray-300">Imagem Principal *</Label>
-              <div className="flex space-x-2">
-                <Input
-                  placeholder="URL da imagem principal ou faça upload"
-                  value={mainImage}
-                  onChange={(e) => setMainImage(e.target.value)}
-                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                />
-                <ImageUploadButton
-                  onImageUploaded={setMainImage}
-                  className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent"
-                />
-              </div>
-              {mainImage && (
-                <div className="mt-2">
-                  <img src={mainImage} alt="Preview" className="w-24 h-24 object-cover rounded border border-gray-600" />
-                </div>
-              )}
-            </div>
-
-            {/* Imagens Secundárias */}
-            <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label className="text-gray-300">Imagens Secundárias (Carrossel)</Label>
-                <Button
-                  type="button"
-                  onClick={addSecondaryImage}
-                  variant="outline"
-                  size="sm"
-                  className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent"
-                >
-                  <Plus className="w-4 h-4 mr-1" />
-                  Adicionar
-                </Button>
-              </div>
-              
-              {secondaryImages.map((image, index) => (
-                <div key={index} className="flex space-x-2">
-                  <Input
-                    placeholder={`URL da imagem ${index + 1} ou faça upload`}
-                    value={image}
-                    onChange={(e) => updateSecondaryImage(index, e.target.value)}
-                    className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                  />
-                  <ImageUploadButton
-                    onImageUploaded={(url) => updateSecondaryImage(index, url)}
-                    className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent"
-                  />
-                  <Button
-                    type="button"
-                    onClick={() => removeSecondaryImage(index)}
-                    variant="outline"
-                    className="border-red-500 text-red-400 hover:bg-red-500/20 bg-transparent"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Especificações */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-lg font-semibold text-white">Especificações</h3>
-              <Button
-                type="button"
-                onClick={addSpec}
-                variant="outline"
-                size="sm"
-                className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent"
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                Adicionar
-              </Button>
-            </div>
-            
-            {specs.map((spec, index) => (
-              <div key={index} className="flex space-x-2 items-center">
-                <div className="w-8 h-8 bg-cyan-500/20 rounded flex items-center justify-center">
-                  {(() => {
-                    const IconComponent = getIconComponent(spec.icon);
-                    return <IconComponent className="w-4 h-4 text-cyan-400" />;
-                  })()}
-                </div>
-                <Select value={spec.icon} onValueChange={(value) => updateSpec(index, 'icon', value)}>
-                  <SelectTrigger className="w-48 bg-gray-700 border-gray-600 text-white">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-gray-800 border-gray-600">
-                    {iconOptions.map((option) => (
-                      <SelectItem key={option.value} value={option.value} className="text-white">
-                        <div className="flex items-center space-x-2">
-                          <option.icon className="w-4 h-4" />
-                          <span>{option.label}</span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-                <Input
-                  placeholder={`Especificação ${index + 1}`}
-                  value={spec.value}
-                  onChange={(e) => updateSpec(index, 'value', e.target.value)}
-                  className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
-                />
-                {specs.length > 1 && (
-                  <Button
-                    type="button"
-                    onClick={() => removeSpec(index)}
-                    variant="outline"
-                    size="sm"
-                    className="border-red-500 text-red-400 hover:bg-red-500/20 bg-transparent"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <FormField
+                control={form.control}
+                name="name"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-slate-300">Nome do PC</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ex: PC Gamer RTX 4060"
+                        {...field}
+                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
                 )}
-              </div>
-            ))}
-          </div>
+              />
 
-          {/* Botões de Ação */}
-          <div className="flex space-x-4 pt-6">
+              <FormField
+                control={form.control}
+                name="price"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-slate-300">Preço (R$)</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="number"
+                        step="0.01"
+                        placeholder="2500.00"
+                        {...field}
+                        onChange={(e) => field.onChange(parseFloat(e.target.value))}
+                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <FormField
+                control={form.control}
+                name="category"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className="text-slate-300">Categoria</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Ex: Gamer, Office, Workstation"
+                        {...field}
+                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+
+              <div className="flex items-center space-x-4">
+                <FormField
+                  control={form.control}
+                  name="highlight"
+                  render={({ field }) => (
+                    <FormItem className="flex items-center space-x-2">
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                      <FormLabel className="text-slate-300">Destacar Produto</FormLabel>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+
+            {isHighlighted && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-700/20 rounded-lg border border-slate-600/50">
+                <FormField
+                  control={form.control}
+                  name="highlight_text"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-300">Texto do Destaque</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder="Ex: MAIS VENDIDO, OFERTA ESPECIAL"
+                          {...field}
+                          className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name="highlight_color"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel className="text-slate-300">Cor da Borda</FormLabel>
+                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                          <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
+                            <SelectValue placeholder="Selecione uma cor" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent className="bg-slate-800 border-slate-600">
+                          {highlightColors.map((color) => (
+                            <SelectItem key={color.value} value={color.value} className="text-white hover:bg-slate-700">
+                              <div className="flex items-center space-x-2">
+                                <div className={`w-4 h-4 rounded border-2 ${color.color}`}></div>
+                                <span>{color.label}</span>
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+            )}
+
+            <FormField
+              control={form.control}
+              name="description"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-slate-300">Descrição</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="Descrição detalhada do PC..."
+                      {...field}
+                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <FormField
+              control={form.control}
+              name="specs"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-slate-300">Especificações (uma por linha)</FormLabel>
+                  <FormControl>
+                    <Textarea
+                      placeholder="RTX 4060&#10;Ryzen 5 5600X&#10;16GB RAM&#10;SSD 500GB"
+                      {...field}
+                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 min-h-24"
+                    />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
+            <div>
+              <label className="block text-sm font-medium text-slate-300 mb-2">
+                Imagem do PC
+              </label>
+              <ImageUploadButton
+                onImageUploaded={setImage}
+                currentImage={image}
+              />
+            </div>
+
             <Button
               type="submit"
-              className="bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500"
+              className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white shadow-lg"
             >
-              {editingPc ? "Atualizar PC" : "Salvar PC"}
+              <Computer className="w-4 h-4 mr-2" />
+              Adicionar PC
             </Button>
-            <Button
-              type="button"
-              onClick={onCancel || resetForm}
-              variant="outline"
-              className="border-gray-600 text-gray-300 hover:bg-gray-800 bg-transparent"
-            >
-              Cancelar
-            </Button>
-          </div>
-        </form>
+          </form>
+        </Form>
       </CardContent>
     </Card>
   );

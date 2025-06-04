@@ -12,6 +12,8 @@ interface PcCardProps {
     description: string;
     specs: string[];
     highlight: boolean;
+    highlight_text?: string;
+    highlight_color?: string;
     image?: string;
   };
   hoveredId: string | null;
@@ -40,13 +42,39 @@ export const PcCard = ({
     }).format(price);
   };
 
+  const getHighlightColorClass = (color: string = 'cyan') => {
+    const colorMap: {[key: string]: string} = {
+      cyan: 'border-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.6)]',
+      pink: 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.6)]',
+      green: 'border-green-400 shadow-[0_0_20px_rgba(34,197,94,0.6)]',
+      red: 'border-red-400 shadow-[0_0_20px_rgba(239,68,68,0.6)]',
+      purple: 'border-purple-400 shadow-[0_0_20px_rgba(168,85,247,0.6)]',
+      yellow: 'border-yellow-400 shadow-[0_0_20px_rgba(250,204,21,0.6)]',
+      blue: 'border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.6)]',
+    };
+    return colorMap[color] || colorMap.cyan;
+  };
+
+  const getHighlightBadgeColor = (color: string = 'cyan') => {
+    const colorMap: {[key: string]: string} = {
+      cyan: 'from-cyan-400 to-blue-500 border-cyan-400 shadow-[0_0_15px_rgba(34,211,238,0.6)]',
+      pink: 'from-pink-400 to-purple-500 border-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.6)]',
+      green: 'from-green-400 to-emerald-500 border-green-400 shadow-[0_0_15px_rgba(34,197,94,0.6)]',
+      red: 'from-red-400 to-rose-500 border-red-400 shadow-[0_0_15px_rgba(239,68,68,0.6)]',
+      purple: 'from-purple-400 to-violet-500 border-purple-400 shadow-[0_0_15px_rgba(168,85,247,0.6)]',
+      yellow: 'from-yellow-400 to-orange-500 border-yellow-400 shadow-[0_0_15px_rgba(250,204,21,0.6)]',
+      blue: 'from-blue-400 to-indigo-500 border-blue-400 shadow-[0_0_15px_rgba(59,130,246,0.6)]',
+    };
+    return colorMap[color] || colorMap.cyan;
+  };
+
   return (
     <Card
       className={`relative bg-gray-900/80 backdrop-blur-sm border-2 transition-all duration-500 ${
         isMobile ? 'hover:scale-[1.02] h-auto' : 'hover:scale-105 h-[520px]'
       } floating-animation ${
         pc.highlight 
-          ? 'border-pink-400 shadow-[0_0_20px_rgba(236,72,153,0.6)]' 
+          ? getHighlightColorClass(pc.highlight_color)
           : hoveredId === pc.id 
             ? borderColors[pc.id] || 'border-cyan-400 shadow-[0_0_30px_rgba(34,211,238,0.3)]'
             : 'border-gray-700'
@@ -58,18 +86,18 @@ export const PcCard = ({
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
     >
-      {pc.highlight && (
+      {pc.highlight && pc.highlight_text && (
         <div className={`absolute ${isMobile ? '-top-3' : '-top-4'} left-1/2 transform -translate-x-1/2 z-20`}>
-          <span className={`bg-gradient-to-r from-pink-400 to-purple-500 ${
+          <span className={`bg-gradient-to-r ${getHighlightBadgeColor(pc.highlight_color)} ${
             isMobile ? 'px-3 py-1 text-xs' : 'px-4 py-2 text-sm'
-          } rounded-full font-bold border-2 border-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.6)]`}>
-            MAIS VENDIDO
+          } rounded-full font-bold border-2`}>
+            {pc.highlight_text}
           </span>
         </div>
       )}
       
       {/* PC Image - Corrigido para cobrir 100% sem aumentar o quadro */}
-      <div className={`relative ${isMobile ? 'h-32' : 'h-40'} overflow-hidden rounded-t-lg mt-2 flex-shrink-0`}>
+      <div className={`relative ${isMobile ? 'h-32' : 'h-40'} overflow-hidden rounded-t-lg mt-2 mx-2 flex-shrink-0`}>
         <img 
           src={pc.image || "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png"} 
           alt={pc.name}

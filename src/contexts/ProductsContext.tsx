@@ -13,6 +13,7 @@ interface Pc {
   spec_icons?: string[];
   highlight: boolean;
   highlight_text?: string;
+  highlight_color?: string;
   image?: string;
   secondary_images?: string[];
   created_at?: string;
@@ -28,6 +29,7 @@ interface Periferico {
   specs?: string[];
   highlight: boolean;
   highlight_text?: string;
+  highlight_color?: string;
   image?: string;
   secondary_images?: string[];
   created_at?: string;
@@ -79,6 +81,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(pc.secondary_images) ? pc.secondary_images.map(String) : [],
         description: pc.description || '',
         highlight_text: pc.highlight_text || '',
+        highlight_color: pc.highlight_color || 'cyan',
         image: pc.image || '',
       })) || [];
       
@@ -108,6 +111,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(periferico.secondary_images) ? periferico.secondary_images.map(String) : [],
         description: periferico.description || '',
         highlight_text: periferico.highlight_text || '',
+        highlight_color: periferico.highlight_color || 'cyan',
         image: periferico.image || '',
       })) || [];
       
