@@ -25,7 +25,7 @@ export const PcsList = () => {
     }).format(price);
   };
 
-  const handleView = (productId: number) => {
+  const handleView = (productId: string) => {
     navigate(`/pc/${productId}`);
   };
 
@@ -42,7 +42,7 @@ export const PcsList = () => {
     });
   };
 
-  const handleDelete = (productId: number) => {
+  const handleDelete = (productId: string) => {
     if (confirm(`Tem certeza que deseja remover o PC ${productId}?`)) {
       deletePc(productId);
       toast({

@@ -74,9 +74,12 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       const formattedPcs = data?.map(pc => ({
         ...pc,
-        specs: Array.isArray(pc.specs) ? pc.specs : [],
-        spec_icons: Array.isArray(pc.spec_icons) ? pc.spec_icons : [],
-        secondary_images: Array.isArray(pc.secondary_images) ? pc.secondary_images : [],
+        specs: Array.isArray(pc.specs) ? pc.specs.map(String) : [],
+        spec_icons: Array.isArray(pc.spec_icons) ? pc.spec_icons.map(String) : [],
+        secondary_images: Array.isArray(pc.secondary_images) ? pc.secondary_images.map(String) : [],
+        description: pc.description || '',
+        highlight_text: pc.highlight_text || '',
+        image: pc.image || '',
       })) || [];
       
       setPcs(formattedPcs);
@@ -101,8 +104,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       
       const formattedPerifericos = data?.map(periferico => ({
         ...periferico,
-        specs: Array.isArray(periferico.specs) ? periferico.specs : [],
-        secondary_images: Array.isArray(periferico.secondary_images) ? periferico.secondary_images : [],
+        specs: Array.isArray(periferico.specs) ? periferico.specs.map(String) : [],
+        secondary_images: Array.isArray(periferico.secondary_images) ? periferico.secondary_images.map(String) : [],
+        description: periferico.description || '',
+        highlight_text: periferico.highlight_text || '',
+        image: periferico.image || '',
       })) || [];
       
       setPerifericos(formattedPerifericos);

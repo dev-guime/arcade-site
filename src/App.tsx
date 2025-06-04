@@ -18,24 +18,26 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <AuthProvider>
-          <ProductsProvider>
-            <Toaster />
+      <AuthProvider>
+        <ProductsProvider>
+          <TooltipProvider>
             <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Index />} />
-                <Route path="/pcs" element={<PcsPage />} />
-                <Route path="/pc/:id" element={<PcDetailPage />} />
-                <Route path="/perifericos" element={<PerifericosPage />} />
-                <Route path="/login" element={<LoginPage />} />
-                <Route path="/admin" element={<AdminPanel />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
+              <div className="min-h-screen w-full">
+                <Toaster />
+                <Routes>
+                  <Route path="/" element={<Index />} />
+                  <Route path="/pcs" element={<PcsPage />} />
+                  <Route path="/pc/:id" element={<PcDetailPage />} />
+                  <Route path="/perifericos" element={<PerifericosPage />} />
+                  <Route path="/login" element={<LoginPage />} />
+                  <Route path="/admin" element={<AdminPanel />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </div>
             </BrowserRouter>
-          </ProductsProvider>
-        </AuthProvider>
-      </TooltipProvider>
+          </TooltipProvider>
+        </ProductsProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
