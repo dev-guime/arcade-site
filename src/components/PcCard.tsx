@@ -96,15 +96,15 @@ export const PcCard = ({
         </div>
       )}
       
-      {/* PC Image - Corrigido para cobrir 100% sem aumentar o quadro */}
-      <div className={`relative ${isMobile ? 'h-32' : 'h-40'} overflow-hidden rounded-t-lg mt-2 mx-2 flex-shrink-0`}>
+      {/* PC Image - Melhorado para 100% visibilidade */}
+      <div className={`relative ${isMobile ? 'h-40' : 'h-48'} overflow-hidden rounded-t-lg mt-2 mx-2 flex-shrink-0 bg-gray-800/50`}>
         <img 
           src={pc.image || "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png"} 
           alt={pc.name}
-          className="w-full h-full object-cover"
-          style={{ objectFit: 'cover', objectPosition: 'center' }}
+          className="w-full h-full object-contain p-2"
+          style={{ objectFit: 'contain', objectPosition: 'center' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
+        <div className="absolute inset-0 bg-gradient-to-t from-gray-900/10 to-transparent pointer-events-none"></div>
       </div>
       
       <CardHeader className={`${isMobile ? 'pb-2' : 'pb-3'} flex-shrink-0`}>

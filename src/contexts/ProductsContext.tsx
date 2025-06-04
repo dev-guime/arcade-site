@@ -35,16 +35,32 @@ interface Periferico {
   updated_at?: string;
 }
 
+interface DeliveredPc {
+  id: string;
+  name: string;
+  customer: string;
+  delivery_date: string;
+  location: string;
+  specs: string[];
+  image?: string;
+  created_at?: string;
+  updated_at?: string;
+}
+
 interface ProductsContextType {
   pcs: Pc[];
   perifericos: Periferico[];
+  deliveredPcs: DeliveredPc[];
   loading: boolean;
   addPc: (pc: Omit<Pc, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   addPeriferico: (periferico: Omit<Periferico, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  addDeliveredPc: (deliveredPc: Omit<DeliveredPc, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
   updatePc: (id: string, pc: Partial<Pc>) => Promise<void>;
   updatePeriferico: (id: string, periferico: Partial<Periferico>) => Promise<void>;
+  updateDeliveredPc: (id: string, deliveredPc: Partial<DeliveredPc>) => Promise<void>;
   deletePc: (id: string) => Promise<void>;
   deletePeriferico: (id: string) => Promise<void>;
+  deleteDeliveredPc: (id: string) => Promise<void>;
   refreshData: () => Promise<void>;
 }
 
@@ -61,6 +77,7 @@ export const useProducts = () => {
 export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [pcs, setPcs] = useState<Pc[]>([]);
   const [perifericos, setPerifericos] = useState<Periferico[]>([]);
+  const [deliveredPcs, setDeliveredPcs] = useState<DeliveredPc[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -125,9 +142,35 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
+  const fetchDeliveredPcs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('delivered_pcs')
+        .select('*')
+        .order('delivery_date', { ascending: false });
+
+      if (error) throw error;
+      
+      const formattedDeliveredPcs = data?.map(pc => ({
+        ...pc,
+        specs: Array.isArray(pc.specs) ? pc.specs.map(String) : [],
+        image: pc.image || '',
+      })) || [];
+      
+      setDeliveredPcs(formattedDeliveredPcs);
+    } catch (error) {
+      console.error('Error fetching delivered PCs:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar PCs entregues do banco de dados.",
+        variant: "destructive",
+      });
+    }
+  };
+
   const refreshData = async () => {
     setLoading(true);
-    await Promise.all([fetchPcs(), fetchPerifericos()]);
+    await Promise.all([fetchPcs(), fetchPerifericos(), fetchDeliveredPcs()]);
     setLoading(false);
   };
 
@@ -149,9 +192,17 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       })
       .subscribe();
 
+    const deliveredPcsChannel = supabase
+      .channel('delivered-pcs-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'delivered_pcs' }, () => {
+        fetchDeliveredPcs();
+      })
+      .subscribe();
+
     return () => {
       supabase.removeChannel(pcsChannel);
       supabase.removeChannel(perifericosChannel);
+      supabase.removeChannel(deliveredPcsChannel);
     };
   }, []);
 
@@ -210,6 +261,37 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       toast({
         title: "Erro",
         description: "Erro ao adicionar periférico.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const addDeliveredPc = async (newDeliveredPc: Omit<DeliveredPc, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const { error } = await supabase
+        .from('delivered_pcs')
+        .insert([{
+          name: newDeliveredPc.name,
+          customer: newDeliveredPc.customer,
+          delivery_date: newDeliveredPc.delivery_date,
+          location: newDeliveredPc.location,
+          specs: newDeliveredPc.specs || [],
+          image: newDeliveredPc.image,
+        }]);
+
+      if (error) throw error;
+      
+      await fetchDeliveredPcs();
+      toast({
+        title: "Sucesso",
+        description: "PC entregue adicionado com sucesso!",
+      });
+    } catch (error) {
+      console.error('Error adding delivered PC:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao adicionar PC entregue.",
         variant: "destructive",
       });
       throw error;
@@ -289,6 +371,42 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
+  const updateDeliveredPc = async (id: string, updatedDeliveredPc: Partial<DeliveredPc>) => {
+    try {
+      const updateData: any = {
+        updated_at: new Date().toISOString(),
+      };
+
+      if (updatedDeliveredPc.name !== undefined) updateData.name = updatedDeliveredPc.name;
+      if (updatedDeliveredPc.customer !== undefined) updateData.customer = updatedDeliveredPc.customer;
+      if (updatedDeliveredPc.delivery_date !== undefined) updateData.delivery_date = updatedDeliveredPc.delivery_date;
+      if (updatedDeliveredPc.location !== undefined) updateData.location = updatedDeliveredPc.location;
+      if (updatedDeliveredPc.specs !== undefined) updateData.specs = updatedDeliveredPc.specs;
+      if (updatedDeliveredPc.image !== undefined) updateData.image = updatedDeliveredPc.image;
+
+      const { error } = await supabase
+        .from('delivered_pcs')
+        .update(updateData)
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      await fetchDeliveredPcs();
+      toast({
+        title: "Sucesso",
+        description: "PC entregue atualizado com sucesso!",
+      });
+    } catch (error) {
+      console.error('Error updating delivered PC:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar PC entregue.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   const deletePc = async (id: string) => {
     try {
       const { error } = await supabase
@@ -331,17 +449,46 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
     }
   };
 
+  const deleteDeliveredPc = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('delivered_pcs')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      await fetchDeliveredPcs();
+      toast({
+        title: "Sucesso",
+        description: "PC entregue removido com sucesso!",
+      });
+    } catch (error) {
+      console.error('Error deleting delivered PC:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao deletar PC entregue.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
   return (
     <ProductsContext.Provider value={{
       pcs,
       perifericos,
+      deliveredPcs,
       loading,
       addPc,
       addPeriferico,
+      addDeliveredPc,
       updatePc,
       updatePeriferico,
+      updateDeliveredPc,
       deletePc,
       deletePeriferico,
+      deleteDeliveredPc,
       refreshData
     }}>
       {children}

@@ -1,10 +1,19 @@
 
-import { ReactNode } from "react";
+import { ReactNode, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { useNavigate } from "react-router-dom";
-import { LogOut, BarChart3, Computer, Gamepad2, Package, ArrowLeft } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
 import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import { 
+  Computer, 
+  Package, 
+  BarChart3, 
+  LogOut, 
+  Menu,
+  X,
+  Home,
+  Gamepad2
+} from "lucide-react";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -13,84 +22,159 @@ interface AdminLayoutProps {
 }
 
 export const AdminLayout = ({ children, activeTab, onTabChange }: AdminLayoutProps) => {
-  const navigate = useNavigate();
   const { logout } = useAuth();
+  const navigate = useNavigate();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const handleLogout = () => {
     logout();
     navigate("/");
   };
 
+  const handleGoHome = () => {
+    navigate("/");
+  };
+
   const tabs = [
     { id: "dashboard", label: "Dashboard", icon: BarChart3 },
-    { id: "pcs", label: "Gerenciar PCs", icon: Computer },
-    { id: "perifericos", label: "Gerenciar Periféricos", icon: Gamepad2 },
-    { id: "examples", label: "Gerenciar Exemplos", icon: Package },
+    { id: "pcs", label: "PCs", icon: Computer },
+    { id: "perifericos", label: "Periféricos", icon: Gamepad2 },
+    { id: "examples", label: "Exemplos", icon: Package },
   ];
+
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      {/* Header */}
-      <header className="border-b border-slate-700/50 bg-slate-800/50 backdrop-blur-sm">
-        <div className="px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button
-                onClick={() => navigate('/')}
-                variant="ghost"
-                className="text-slate-400 hover:text-slate-300 hover:bg-slate-700/50"
-              >
-                <ArrowLeft className="mr-2 h-4 w-4" />
-                Voltar ao Site
-              </Button>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                Painel Administrativo
-              </h1>
-            </div>
+      {/* Mobile Header */}
+      <div className="md:hidden bg-slate-800/50 backdrop-blur-sm border-b border-slate-700 p-4">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-3">
             <Button
-              onClick={handleLogout}
-              variant="outline"
-              className="border-red-500/50 text-red-400 hover:bg-red-500/20 hover:border-red-400 bg-transparent"
+              variant="ghost"
+              size="sm"
+              onClick={toggleMobileMenu}
+              className="text-white"
             >
-              <LogOut className="mr-2 h-4 w-4" />
-              Sair
+              {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
+            <h1 className="text-lg font-bold text-white">Admin Panel</h1>
           </div>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={handleGoHome}
+            className="text-white"
+          >
+            <Home className="w-5 h-5" />
+          </Button>
         </div>
-      </header>
-
-      {/* Navigation Tabs */}
-      <nav className="border-b border-slate-700/50 bg-slate-800/30 backdrop-blur-sm">
-        <div className="px-6">
-          <div className="flex space-x-1">
+        
+        {/* Mobile Menu */}
+        {isMobileMenuOpen && (
+          <div className="mt-4 space-y-2 pb-4 border-t border-slate-700 pt-4">
             {tabs.map((tab) => {
               const Icon = tab.icon;
               return (
                 <Button
                   key={tab.id}
-                  onClick={() => onTabChange(tab.id)}
-                  variant="ghost"
-                  className={`px-6 py-4 rounded-none border-b-2 transition-all ${
+                  variant={activeTab === tab.id ? "default" : "ghost"}
+                  onClick={() => {
+                    onTabChange(tab.id);
+                    setIsMobileMenuOpen(false);
+                  }}
+                  className={`w-full justify-start ${
                     activeTab === tab.id
-                      ? "border-blue-400 text-blue-400 bg-slate-700/30"
-                      : "border-transparent text-slate-400 hover:text-slate-300 hover:bg-slate-700/20"
+                      ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white"
+                      : "text-slate-300 hover:text-white hover:bg-slate-700"
                   }`}
                 >
-                  <Icon className="mr-2 h-4 w-4" />
+                  <Icon className="w-4 h-4 mr-3" />
                   {tab.label}
                 </Button>
               );
             })}
+            <Button
+              variant="ghost"
+              onClick={handleLogout}
+              className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/20"
+            >
+              <LogOut className="w-4 h-4 mr-3" />
+              Sair
+            </Button>
+          </div>
+        )}
+      </div>
+
+      <div className="flex">
+        {/* Desktop Sidebar */}
+        <div className="hidden md:block w-64 bg-slate-800/50 backdrop-blur-sm border-r border-slate-700 min-h-screen">
+          <div className="p-6">
+            <div className="flex items-center gap-3 mb-8">
+              <div className="w-10 h-10 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                <Computer className="w-6 h-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-bold text-white">Admin Panel</h1>
+                <Badge variant="outline" className="text-green-400 border-green-400">
+                  Dashboard
+                </Badge>
+              </div>
+            </div>
+
+            <nav className="space-y-2">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                return (
+                  <Button
+                    key={tab.id}
+                    variant={activeTab === tab.id ? "default" : "ghost"}
+                    onClick={() => onTabChange(tab.id)}
+                    className={`w-full justify-start ${
+                      activeTab === tab.id
+                        ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg"
+                        : "text-slate-300 hover:text-white hover:bg-slate-700"
+                    }`}
+                  >
+                    <Icon className="w-4 h-4 mr-3" />
+                    {tab.label}
+                  </Button>
+                );
+              })}
+            </nav>
+
+            <div className="absolute bottom-6 left-6 right-6">
+              <div className="space-y-3">
+                <Button
+                  variant="ghost"
+                  onClick={handleGoHome}
+                  className="w-full justify-start text-slate-300 hover:text-white hover:bg-slate-700"
+                >
+                  <Home className="w-4 h-4 mr-3" />
+                  Ir para o Site
+                </Button>
+                <Button
+                  variant="ghost"
+                  onClick={handleLogout}
+                  className="w-full justify-start text-red-400 hover:text-red-300 hover:bg-red-500/20"
+                >
+                  <LogOut className="w-4 h-4 mr-3" />
+                  Sair
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-      </nav>
 
-      {/* Main Content */}
-      <main className="flex-1">
-        <Card className="m-6 bg-slate-800/30 backdrop-blur-sm border-slate-700/50 min-h-[calc(100vh-200px)]">
-          {children}
-        </Card>
-      </main>
+        {/* Main Content */}
+        <div className="flex-1 min-h-screen">
+          <div className="h-full overflow-auto">
+            {children}
+          </div>
+        </div>
+      </div>
     </div>
   );
 };
