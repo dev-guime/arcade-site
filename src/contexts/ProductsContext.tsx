@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -81,7 +80,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(pc.secondary_images) ? pc.secondary_images.map(String) : [],
         description: pc.description || '',
         highlight_text: pc.highlight_text || '',
-        highlight_color: pc.highlight_color || 'cyan',
+        highlight_color: 'cyan', // Default color since it's not in database
         image: pc.image || '',
       })) || [];
       
@@ -111,7 +110,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(periferico.secondary_images) ? periferico.secondary_images.map(String) : [],
         description: periferico.description || '',
         highlight_text: periferico.highlight_text || '',
-        highlight_color: periferico.highlight_color || 'cyan',
+        highlight_color: 'cyan', // Default color since it's not in database
         image: periferico.image || '',
       })) || [];
       
@@ -161,10 +160,16 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       const { error } = await supabase
         .from('pcs')
         .insert([{
-          ...newPc,
+          name: newPc.name,
+          price: newPc.price,
+          category: newPc.category,
+          description: newPc.description,
           specs: newPc.specs || [],
           spec_icons: newPc.spec_icons || [],
           secondary_images: newPc.secondary_images || [],
+          highlight: newPc.highlight,
+          highlight_text: newPc.highlight_text,
+          image: newPc.image,
         }]);
 
       if (error) throw error;
@@ -186,9 +191,15 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       const { error } = await supabase
         .from('perifericos')
         .insert([{
-          ...newPeriferico,
+          name: newPeriferico.name,
+          price: newPeriferico.price,
+          category: newPeriferico.category,
+          description: newPeriferico.description,
           specs: newPeriferico.specs || [],
           secondary_images: newPeriferico.secondary_images || [],
+          highlight: newPeriferico.highlight,
+          highlight_text: newPeriferico.highlight_text,
+          image: newPeriferico.image,
         }]);
 
       if (error) throw error;
@@ -207,12 +218,25 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const updatePc = async (id: string, updatedPc: Partial<Pc>) => {
     try {
+      const updateData: any = {
+        updated_at: new Date().toISOString(),
+      };
+
+      // Only include fields that exist in the database
+      if (updatedPc.name !== undefined) updateData.name = updatedPc.name;
+      if (updatedPc.price !== undefined) updateData.price = updatedPc.price;
+      if (updatedPc.category !== undefined) updateData.category = updatedPc.category;
+      if (updatedPc.description !== undefined) updateData.description = updatedPc.description;
+      if (updatedPc.specs !== undefined) updateData.specs = updatedPc.specs;
+      if (updatedPc.spec_icons !== undefined) updateData.spec_icons = updatedPc.spec_icons;
+      if (updatedPc.secondary_images !== undefined) updateData.secondary_images = updatedPc.secondary_images;
+      if (updatedPc.highlight !== undefined) updateData.highlight = updatedPc.highlight;
+      if (updatedPc.highlight_text !== undefined) updateData.highlight_text = updatedPc.highlight_text;
+      if (updatedPc.image !== undefined) updateData.image = updatedPc.image;
+
       const { error } = await supabase
         .from('pcs')
-        .update({
-          ...updatedPc,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', id);
 
       if (error) throw error;
@@ -231,12 +255,24 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const updatePeriferico = async (id: string, updatedPeriferico: Partial<Periferico>) => {
     try {
+      const updateData: any = {
+        updated_at: new Date().toISOString(),
+      };
+
+      // Only include fields that exist in the database
+      if (updatedPeriferico.name !== undefined) updateData.name = updatedPeriferico.name;
+      if (updatedPeriferico.price !== undefined) updateData.price = updatedPeriferico.price;
+      if (updatedPeriferico.category !== undefined) updateData.category = updatedPeriferico.category;
+      if (updatedPeriferico.description !== undefined) updateData.description = updatedPeriferico.description;
+      if (updatedPeriferico.specs !== undefined) updateData.specs = updatedPeriferico.specs;
+      if (updatedPeriferico.secondary_images !== undefined) updateData.secondary_images = updatedPeriferico.secondary_images;
+      if (updatedPeriferico.highlight !== undefined) updateData.highlight = updatedPeriferico.highlight;
+      if (updatedPeriferico.highlight_text !== undefined) updateData.highlight_text = updatedPeriferico.highlight_text;
+      if (updatedPeriferico.image !== undefined) updateData.image = updatedPeriferico.image;
+
       const { error } = await supabase
         .from('perifericos')
-        .update({
-          ...updatedPeriferico,
-          updated_at: new Date().toISOString(),
-        })
+        .update(updateData)
         .eq('id', id);
 
       if (error) throw error;

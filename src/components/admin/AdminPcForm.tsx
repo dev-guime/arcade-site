@@ -39,23 +39,29 @@ const highlightColors = [
   { value: "blue", label: "Azul", color: "border-blue-400" },
 ];
 
-export const AdminPcForm = () => {
+interface AdminPcFormProps {
+  editingPc?: any;
+  onSubmit?: (data: any) => void;
+  onCancel?: () => void;
+}
+
+export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: AdminPcFormProps) => {
   const { toast } = useToast();
-  const { addPc } = useProducts();
-  const [image, setImage] = useState<string>("");
+  const { addPc, updatePc } = useProducts();
+  const [image, setImage] = useState<string>(editingPc?.image || "");
 
   const form = useForm<PcFormData>({
     resolver: zodResolver(pcSchema),
     defaultValues: {
-      name: "",
-      price: 0,
-      category: "",
-      description: "",
-      specs: "",
-      highlight: false,
-      highlight_text: "",
-      highlight_color: "cyan",
-      image: "",
+      name: editingPc?.name || "",
+      price: editingPc?.price || 0,
+      category: editingPc?.category || "",
+      description: editingPc?.description || "",
+      specs: editingPc?.specs ? editingPc.specs.join('\n') : "",
+      highlight: editingPc?.highlight || false,
+      highlight_text: editingPc?.highlight_text || "",
+      highlight_color: editingPc?.highlight_color || "cyan",
+      image: editingPc?.image || "",
     },
   });
 
@@ -66,29 +72,43 @@ export const AdminPcForm = () => {
       const specsArray = data.specs.split('\n').filter(spec => spec.trim() !== '');
       
       const pcData = {
-        ...data,
+        name: data.name,
+        price: data.price,
+        category: data.category,
+        description: data.description,
         specs: specsArray,
         spec_icons: [],
         secondary_images: [],
         image: image || undefined,
+        highlight: data.highlight,
         highlight_text: data.highlight ? data.highlight_text : undefined,
         highlight_color: data.highlight ? data.highlight_color : undefined,
       };
 
-      await addPc(pcData);
+      if (editingPc) {
+        if (onSubmitProp) {
+          onSubmitProp(pcData);
+        } else {
+          await updatePc(editingPc.id, pcData);
+        }
+      } else {
+        await addPc(pcData);
+      }
       
       toast({
         title: "Sucesso!",
-        description: "PC adicionado com sucesso!",
+        description: editingPc ? "PC atualizado com sucesso!" : "PC adicionado com sucesso!",
       });
 
-      form.reset();
-      setImage("");
+      if (!editingPc) {
+        form.reset();
+        setImage("");
+      }
     } catch (error) {
-      console.error('Error adding PC:', error);
+      console.error('Error saving PC:', error);
       toast({
         title: "Erro",
-        description: "Erro ao adicionar PC. Tente novamente.",
+        description: "Erro ao salvar PC. Tente novamente.",
         variant: "destructive",
       });
     }
@@ -99,7 +119,7 @@ export const AdminPcForm = () => {
       <CardHeader>
         <CardTitle className="text-cyan-400 flex items-center gap-2">
           <Computer className="w-5 h-5" />
-          Adicionar Novo PC
+          {editingPc ? "Editar PC" : "Adicionar Novo PC"}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -278,13 +298,25 @@ export const AdminPcForm = () => {
               />
             </div>
 
-            <Button
-              type="submit"
-              className="w-full bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white shadow-lg"
-            >
-              <Computer className="w-4 h-4 mr-2" />
-              Adicionar PC
-            </Button>
+            <div className="flex gap-4">
+              <Button
+                type="submit"
+                className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white shadow-lg"
+              >
+                <Computer className="w-4 h-4 mr-2" />
+                {editingPc ? "Atualizar PC" : "Adicionar PC"}
+              </Button>
+              {onCancel && (
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={onCancel}
+                  className="border-slate-600 text-slate-300 hover:bg-slate-800"
+                >
+                  Cancelar
+                </Button>
+              )}
+            </div>
           </form>
         </Form>
       </CardContent>

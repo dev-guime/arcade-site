@@ -8,9 +8,10 @@ interface ImageUploadButtonProps {
   onImageUploaded: (url: string) => void;
   className?: string;
   disabled?: boolean;
+  currentImage?: string;
 }
 
-export const ImageUploadButton = ({ onImageUploaded, className, disabled }: ImageUploadButtonProps) => {
+export const ImageUploadButton = ({ onImageUploaded, className, disabled, currentImage }: ImageUploadButtonProps) => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { uploadImage, uploading } = useImageUpload();
 
@@ -46,7 +47,7 @@ export const ImageUploadButton = ({ onImageUploaded, className, disabled }: Imag
   };
 
   return (
-    <>
+    <div className="space-y-2">
       <Button
         type="button"
         onClick={handleClick}
@@ -58,7 +59,17 @@ export const ImageUploadButton = ({ onImageUploaded, className, disabled }: Imag
         ) : (
           <Upload className="w-4 h-4" />
         )}
+        {uploading ? 'Enviando...' : 'Selecionar Imagem'}
       </Button>
+      {currentImage && (
+        <div className="mt-2">
+          <img
+            src={currentImage}
+            alt="Preview"
+            className="w-20 h-20 object-cover rounded border"
+          />
+        </div>
+      )}
       <input
         ref={fileInputRef}
         type="file"
@@ -66,6 +77,6 @@ export const ImageUploadButton = ({ onImageUploaded, className, disabled }: Imag
         onChange={handleFileChange}
         className="hidden"
       />
-    </>
+    </div>
   );
 };
