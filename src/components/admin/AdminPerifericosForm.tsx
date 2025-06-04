@@ -4,9 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, X, Gamepad2, Headphones, Keyboard, Monitor, Cpu, Upload, Mouse, Mic } from "lucide-react";
+import { Plus, X, Gamepad2 } from "lucide-react";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useToast } from "@/hooks/use-toast";
+import { ImageUploadButton } from "./ImageUploadButton";
 
 interface PerifericosFormProps {
   editingProduct?: any;
@@ -19,8 +20,8 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
   const { toast } = useToast();
   
   const [specs, setSpecs] = useState<string[]>([editingProduct?.specs?.[0] || ""]);
-  const [mainImage, setMainImage] = useState<string>(editingProduct?.image || "/placeholder.svg");
-  const [secondaryImages, setSecondaryImages] = useState<string[]>(editingProduct?.secondaryImages || []);
+  const [mainImage, setMainImage] = useState<string>(editingProduct?.image || "");
+  const [secondaryImages, setSecondaryImages] = useState<string[]>(editingProduct?.secondary_images || []);
   const [formData, setFormData] = useState({
     name: editingProduct?.name || "",
     price: editingProduct?.price || "",
@@ -32,10 +33,10 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
 
   const categories = [
     { id: "combos", name: "Combos", icon: Gamepad2, color: "from-purple-500 to-pink-500" },
-    { id: "audio", name: "Áudio", icon: Headphones, color: "from-blue-500 to-cyan-500" },
-    { id: "controles", name: "Controles", icon: Keyboard, color: "from-green-500 to-emerald-500" },
-    { id: "video", name: "Vídeo", icon: Monitor, color: "from-orange-500 to-red-500" },
-    { id: "setup", name: "Setup", icon: Cpu, color: "from-indigo-500 to-purple-500" },
+    { id: "audio", name: "Áudio", icon: Gamepad2, color: "from-blue-500 to-cyan-500" },
+    { id: "controles", name: "Controles", icon: Gamepad2, color: "from-green-500 to-emerald-500" },
+    { id: "video", name: "Vídeo", icon: Gamepad2, color: "from-orange-500 to-red-500" },
+    { id: "setup", name: "Setup", icon: Gamepad2, color: "from-indigo-500 to-purple-500" },
   ];
 
   const addSpec = () => {
@@ -75,7 +76,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
       highlight_text: "",
     });
     setSpecs([""]);
-    setMainImage("/placeholder.svg");
+    setMainImage("");
     setSecondaryImages([]);
   };
 
@@ -96,7 +97,7 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
     return categoryMap[tab] || "Combos";
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name || !formData.price) {
@@ -108,30 +109,34 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
       return;
     }
 
-    const data = {
-      ...formData,
-      price: parseFloat(formData.price),
-      category: getCategoryFromTab(currentCategory),
-      image: mainImage,
-      secondaryImages,
-      specs: specs.filter(Boolean),
-    };
-    
-    if (onSubmit) {
-      onSubmit(data);
-    } else if (editingProduct) {
-      updatePeriferico(editingProduct.id, data);
-      toast({
-        title: "Sucesso!",
-        description: "Periférico atualizado com sucesso!",
-      });
-    } else {
-      addPeriferico(data);
-      toast({
-        title: "Sucesso!",
-        description: "Periférico adicionado com sucesso!",
-      });
-      resetForm();
+    try {
+      const data = {
+        ...formData,
+        price: parseFloat(formData.price),
+        category: getCategoryFromTab(currentCategory),
+        image: mainImage,
+        secondary_images: secondaryImages.filter(Boolean),
+        specs: specs.filter(Boolean),
+      };
+      
+      if (onSubmit) {
+        onSubmit(data);
+      } else if (editingProduct) {
+        await updatePeriferico(editingProduct.id, data);
+        toast({
+          title: "Sucesso!",
+          description: "Periférico atualizado com sucesso!",
+        });
+      } else {
+        await addPeriferico(data);
+        toast({
+          title: "Sucesso!",
+          description: "Periférico adicionado com sucesso!",
+        });
+        resetForm();
+      }
+    } catch (error) {
+      // Error handling is done in the context
     }
   };
 
@@ -252,18 +257,15 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
                 <Label className="text-slate-300">Imagem Principal *</Label>
                 <div className="flex space-x-2">
                   <Input
-                    placeholder="URL da imagem principal"
+                    placeholder="URL da imagem principal ou faça upload"
                     value={mainImage}
                     onChange={(e) => setMainImage(e.target.value)}
                     className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
+                  <ImageUploadButton
+                    onImageUploaded={setMainImage}
                     className="border-purple-500/50 text-purple-400 hover:bg-purple-500/20 bg-transparent"
-                  >
-                    <Upload className="w-4 h-4" />
-                  </Button>
+                  />
                 </div>
                 {mainImage && (
                   <div className="mt-2">
@@ -291,18 +293,15 @@ export const AdminPerifericosForm = ({ editingProduct, onSubmit, onCancel }: Per
                 {secondaryImages.map((image, index) => (
                   <div key={index} className="flex space-x-2">
                     <Input
-                      placeholder={`URL da imagem ${index + 1}`}
+                      placeholder={`URL da imagem ${index + 1} ou faça upload`}
                       value={image}
                       onChange={(e) => updateSecondaryImage(index, e.target.value)}
                       className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
+                    <ImageUploadButton
+                      onImageUploaded={(url) => updateSecondaryImage(index, url)}
                       className="border-purple-500/50 text-purple-400 hover:bg-purple-500/20 bg-transparent"
-                    >
-                      <Upload className="w-4 h-4" />
-                    </Button>
+                    />
                     <Button
                       type="button"
                       onClick={() => removeSecondaryImage(index)}

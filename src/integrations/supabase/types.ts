@@ -9,7 +9,99 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      pcs: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          highlight: boolean | null
+          highlight_text: string | null
+          id: string
+          image: string | null
+          name: string
+          price: number
+          secondary_images: Json | null
+          spec_icons: Json | null
+          specs: Json | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          highlight?: boolean | null
+          highlight_text?: string | null
+          id?: string
+          image?: string | null
+          name: string
+          price: number
+          secondary_images?: Json | null
+          spec_icons?: Json | null
+          specs?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          highlight?: boolean | null
+          highlight_text?: string | null
+          id?: string
+          image?: string | null
+          name?: string
+          price?: number
+          secondary_images?: Json | null
+          spec_icons?: Json | null
+          specs?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      perifericos: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          highlight: boolean | null
+          highlight_text: string | null
+          id: string
+          image: string | null
+          name: string
+          price: number
+          secondary_images: Json | null
+          specs: Json | null
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          highlight?: boolean | null
+          highlight_text?: string | null
+          id?: string
+          image?: string | null
+          name: string
+          price: number
+          secondary_images?: Json | null
+          specs?: Json | null
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          highlight?: boolean | null
+          highlight_text?: string | null
+          id?: string
+          image?: string | null
+          name?: string
+          price?: number
+          secondary_images?: Json | null
+          specs?: Json | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

@@ -4,12 +4,13 @@ export interface Database {
     Tables: {
       pcs: {
         Row: {
-          id: number;
+          id: string;
           name: string;
           price: number;
           category: string;
           description: string;
           specs: string[];
+          spec_icons: string[];
           highlight: boolean;
           highlight_text?: string;
           image?: string;
@@ -23,6 +24,7 @@ export interface Database {
           category: string;
           description: string;
           specs: string[];
+          spec_icons?: string[];
           highlight?: boolean;
           highlight_text?: string;
           image?: string;
@@ -34,6 +36,7 @@ export interface Database {
           category?: string;
           description?: string;
           specs?: string[];
+          spec_icons?: string[];
           highlight?: boolean;
           highlight_text?: string;
           image?: string;
@@ -42,7 +45,7 @@ export interface Database {
       };
       perifericos: {
         Row: {
-          id: number;
+          id: string;
           name: string;
           price: number;
           category: string;
@@ -83,12 +86,13 @@ export interface Database {
 }
 
 export interface Pc {
-  id: number;
+  id: string;
   name: string;
   price: number;
   category: string;
   description: string;
   specs: string[];
+  spec_icons?: string[];
   highlight: boolean;
   highlight_text?: string;
   image?: string;
@@ -96,7 +100,7 @@ export interface Pc {
 }
 
 export interface Periferico {
-  id: number;
+  id: string;
   name: string;
   price: number;
   category: string;

@@ -1,16 +1,50 @@
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
-import { Pc, Periferico } from '@/types/database';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
+
+interface Pc {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  description: string;
+  specs: string[];
+  spec_icons?: string[];
+  highlight: boolean;
+  highlight_text?: string;
+  image?: string;
+  secondary_images?: string[];
+  created_at?: string;
+  updated_at?: string;
+}
+
+interface Periferico {
+  id: string;
+  name: string;
+  price: number;
+  category: string;
+  description?: string;
+  specs?: string[];
+  highlight: boolean;
+  highlight_text?: string;
+  image?: string;
+  secondary_images?: string[];
+  created_at?: string;
+  updated_at?: string;
+}
 
 interface ProductsContextType {
   pcs: Pc[];
   perifericos: Periferico[];
-  addPc: (pc: Omit<Pc, 'id'>) => void;
-  addPeriferico: (periferico: Omit<Periferico, 'id'>) => void;
-  updatePc: (id: number, pc: Partial<Pc>) => void;
-  updatePeriferico: (id: number, periferico: Partial<Periferico>) => void;
-  deletePc: (id: number) => void;
-  deletePeriferico: (id: number) => void;
+  loading: boolean;
+  addPc: (pc: Omit<Pc, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  addPeriferico: (periferico: Omit<Periferico, 'id' | 'created_at' | 'updated_at'>) => Promise<void>;
+  updatePc: (id: string, pc: Partial<Pc>) => Promise<void>;
+  updatePeriferico: (id: string, periferico: Partial<Periferico>) => Promise<void>;
+  deletePc: (id: string) => Promise<void>;
+  deletePeriferico: (id: string) => Promise<void>;
+  refreshData: () => Promise<void>;
 }
 
 const ProductsContext = createContext<ProductsContextType | undefined>(undefined);
@@ -26,43 +60,243 @@ export const useProducts = () => {
 export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [pcs, setPcs] = useState<Pc[]>([]);
   const [perifericos, setPerifericos] = useState<Periferico[]>([]);
+  const [loading, setLoading] = useState(true);
+  const { toast } = useToast();
 
-  const addPc = (newPc: Omit<Pc, 'id'>) => {
-    const id = Math.max(...pcs.map(p => p.id), 0) + 1;
-    setPcs([...pcs, { ...newPc, id }]);
+  const fetchPcs = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('pcs')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      const formattedPcs = data?.map(pc => ({
+        ...pc,
+        specs: Array.isArray(pc.specs) ? pc.specs : [],
+        spec_icons: Array.isArray(pc.spec_icons) ? pc.spec_icons : [],
+        secondary_images: Array.isArray(pc.secondary_images) ? pc.secondary_images : [],
+      })) || [];
+      
+      setPcs(formattedPcs);
+    } catch (error) {
+      console.error('Error fetching PCs:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar PCs do banco de dados.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const addPeriferico = (newPeriferico: Omit<Periferico, 'id'>) => {
-    const id = Math.max(...perifericos.map(p => p.id), 0) + 1;
-    setPerifericos([...perifericos, { ...newPeriferico, id }]);
+  const fetchPerifericos = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('perifericos')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      
+      const formattedPerifericos = data?.map(periferico => ({
+        ...periferico,
+        specs: Array.isArray(periferico.specs) ? periferico.specs : [],
+        secondary_images: Array.isArray(periferico.secondary_images) ? periferico.secondary_images : [],
+      })) || [];
+      
+      setPerifericos(formattedPerifericos);
+    } catch (error) {
+      console.error('Error fetching Periféricos:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao carregar periféricos do banco de dados.",
+        variant: "destructive",
+      });
+    }
   };
 
-  const updatePc = (id: number, updatedPc: Partial<Pc>) => {
-    setPcs(pcs.map(pc => pc.id === id ? { ...pc, ...updatedPc } : pc));
+  const refreshData = async () => {
+    setLoading(true);
+    await Promise.all([fetchPcs(), fetchPerifericos()]);
+    setLoading(false);
   };
 
-  const updatePeriferico = (id: number, updatedPeriferico: Partial<Periferico>) => {
-    setPerifericos(perifericos.map(p => p.id === id ? { ...p, ...updatedPeriferico } : p));
+  useEffect(() => {
+    refreshData();
+
+    // Subscribe to realtime changes
+    const pcsChannel = supabase
+      .channel('pcs-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'pcs' }, () => {
+        fetchPcs();
+      })
+      .subscribe();
+
+    const perifericosChannel = supabase
+      .channel('perifericos-changes')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'perifericos' }, () => {
+        fetchPerifericos();
+      })
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(pcsChannel);
+      supabase.removeChannel(perifericosChannel);
+    };
+  }, []);
+
+  const addPc = async (newPc: Omit<Pc, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const { error } = await supabase
+        .from('pcs')
+        .insert([{
+          ...newPc,
+          specs: newPc.specs || [],
+          spec_icons: newPc.spec_icons || [],
+          secondary_images: newPc.secondary_images || [],
+        }]);
+
+      if (error) throw error;
+      
+      await fetchPcs();
+    } catch (error) {
+      console.error('Error adding PC:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao adicionar PC.",
+        variant: "destructive",
+      });
+      throw error;
+    }
   };
 
-  const deletePc = (id: number) => {
-    setPcs(pcs.filter(pc => pc.id !== id));
+  const addPeriferico = async (newPeriferico: Omit<Periferico, 'id' | 'created_at' | 'updated_at'>) => {
+    try {
+      const { error } = await supabase
+        .from('perifericos')
+        .insert([{
+          ...newPeriferico,
+          specs: newPeriferico.specs || [],
+          secondary_images: newPeriferico.secondary_images || [],
+        }]);
+
+      if (error) throw error;
+      
+      await fetchPerifericos();
+    } catch (error) {
+      console.error('Error adding Periférico:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao adicionar periférico.",
+        variant: "destructive",
+      });
+      throw error;
+    }
   };
 
-  const deletePeriferico = (id: number) => {
-    setPerifericos(perifericos.filter(p => p.id !== id));
+  const updatePc = async (id: string, updatedPc: Partial<Pc>) => {
+    try {
+      const { error } = await supabase
+        .from('pcs')
+        .update({
+          ...updatedPc,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      await fetchPcs();
+    } catch (error) {
+      console.error('Error updating PC:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar PC.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const updatePeriferico = async (id: string, updatedPeriferico: Partial<Periferico>) => {
+    try {
+      const { error } = await supabase
+        .from('perifericos')
+        .update({
+          ...updatedPeriferico,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      await fetchPerifericos();
+    } catch (error) {
+      console.error('Error updating Periférico:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao atualizar periférico.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const deletePc = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('pcs')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      await fetchPcs();
+    } catch (error) {
+      console.error('Error deleting PC:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao deletar PC.",
+        variant: "destructive",
+      });
+      throw error;
+    }
+  };
+
+  const deletePeriferico = async (id: string) => {
+    try {
+      const { error } = await supabase
+        .from('perifericos')
+        .delete()
+        .eq('id', id);
+
+      if (error) throw error;
+      
+      await fetchPerifericos();
+    } catch (error) {
+      console.error('Error deleting Periférico:', error);
+      toast({
+        title: "Erro",
+        description: "Erro ao deletar periférico.",
+        variant: "destructive",
+      });
+      throw error;
+    }
   };
 
   return (
     <ProductsContext.Provider value={{
       pcs,
       perifericos,
+      loading,
       addPc,
       addPeriferico,
       updatePc,
       updatePeriferico,
       deletePc,
-      deletePeriferico
+      deletePeriferico,
+      refreshData
     }}>
       {children}
     </ProductsContext.Provider>

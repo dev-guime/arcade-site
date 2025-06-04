@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -12,9 +11,10 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Plus, X, Cpu, HardDrive, Zap, Monitor, MemoryStick, Fan, Gamepad2, Upload, Image } from "lucide-react";
+import { Plus, X, Cpu, HardDrive, Zap, Monitor, MemoryStick, Fan, Gamepad2 } from "lucide-react";
 import { useProducts } from "@/contexts/ProductsContext";
 import { useToast } from "@/hooks/use-toast";
+import { ImageUploadButton } from "./ImageUploadButton";
 
 const iconOptions = [
   { value: "cpu", label: "Processador", icon: Cpu },
@@ -40,14 +40,14 @@ export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
     if (editingPc?.specs) {
       return editingPc.specs.map((spec: string, index: number) => ({
         value: spec,
-        icon: index === 0 ? "cpu" : index === 1 ? "memory" : index === 2 ? "storage" : "other"
+        icon: editingPc.spec_icons?.[index] || "cpu"
       }));
     }
     return [{ value: "", icon: "cpu" }];
   });
   
-  const [mainImage, setMainImage] = useState<string>(editingPc?.image || "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png");
-  const [secondaryImages, setSecondaryImages] = useState<string[]>(editingPc?.secondaryImages || []);
+  const [mainImage, setMainImage] = useState<string>(editingPc?.image || "");
+  const [secondaryImages, setSecondaryImages] = useState<string[]>(editingPc?.secondary_images || []);
   const [formData, setFormData] = useState({
     name: editingPc?.name || "",
     price: editingPc?.price || "",
@@ -95,18 +95,17 @@ export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
       highlight_text: "",
     });
     setSpecs([{ value: "", icon: "cpu" }]);
-    setMainImage("/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png");
+    setMainImage("");
     setSecondaryImages([]);
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
-    // Remove tudo que não for número ou ponto
     const numericValue = value.replace(/[^0-9.]/g, '');
     setFormData({...formData, price: numericValue});
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     if (!formData.name || !formData.price || !formData.category) {
@@ -118,30 +117,34 @@ export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
       return;
     }
 
-    const data = {
-      ...formData,
-      price: parseFloat(formData.price),
-      image: mainImage,
-      secondaryImages,
-      specs: specs.map(spec => spec.value).filter(Boolean),
-      specIcons: specs.map(spec => spec.icon),
-    };
-    
-    if (onSubmit) {
-      onSubmit(data);
-    } else if (editingPc) {
-      updatePc(editingPc.id, data);
-      toast({
-        title: "Sucesso!",
-        description: "PC atualizado com sucesso!",
-      });
-    } else {
-      addPc(data);
-      toast({
-        title: "Sucesso!",
-        description: "PC adicionado com sucesso!",
-      });
-      resetForm();
+    try {
+      const data = {
+        ...formData,
+        price: parseFloat(formData.price),
+        image: mainImage,
+        secondary_images: secondaryImages.filter(Boolean),
+        specs: specs.map(spec => spec.value).filter(Boolean),
+        spec_icons: specs.map(spec => spec.icon),
+      };
+      
+      if (onSubmit) {
+        onSubmit(data);
+      } else if (editingPc) {
+        await updatePc(editingPc.id, data);
+        toast({
+          title: "Sucesso!",
+          description: "PC atualizado com sucesso!",
+        });
+      } else {
+        await addPc(data);
+        toast({
+          title: "Sucesso!",
+          description: "PC adicionado com sucesso!",
+        });
+        resetForm();
+      }
+    } catch (error) {
+      // Error handling is done in the context
     }
   };
 
@@ -250,18 +253,15 @@ export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
               <Label className="text-gray-300">Imagem Principal *</Label>
               <div className="flex space-x-2">
                 <Input
-                  placeholder="URL da imagem principal"
+                  placeholder="URL da imagem principal ou faça upload"
                   value={mainImage}
                   onChange={(e) => setMainImage(e.target.value)}
                   className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
+                <ImageUploadButton
+                  onImageUploaded={setMainImage}
                   className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent"
-                >
-                  <Upload className="w-4 h-4" />
-                </Button>
+                />
               </div>
               {mainImage && (
                 <div className="mt-2">
@@ -289,18 +289,15 @@ export const AdminPcForm = ({ editingPc, onSubmit, onCancel }: PcFormProps) => {
               {secondaryImages.map((image, index) => (
                 <div key={index} className="flex space-x-2">
                   <Input
-                    placeholder={`URL da imagem ${index + 1}`}
+                    placeholder={`URL da imagem ${index + 1} ou faça upload`}
                     value={image}
                     onChange={(e) => updateSecondaryImage(index, e.target.value)}
                     className="bg-gray-700 border-gray-600 text-white placeholder:text-gray-400"
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
+                  <ImageUploadButton
+                    onImageUploaded={(url) => updateSecondaryImage(index, url)}
                     className="border-cyan-500 text-cyan-400 hover:bg-cyan-500/20 bg-transparent"
-                  >
-                    <Upload className="w-4 h-4" />
-                  </Button>
+                  />
                   <Button
                     type="button"
                     onClick={() => removeSecondaryImage(index)}
