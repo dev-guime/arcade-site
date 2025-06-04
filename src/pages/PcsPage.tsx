@@ -1,3 +1,4 @@
+
 import { ProductPageBackground } from "@/components/ProductPageBackground";
 import { PcsHeader } from "@/components/PcsHeader";
 import { PcsFooter } from "@/components/PcsFooter";
@@ -7,41 +8,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useNavigate } from "react-router-dom";
 import { Cpu, HardDrive, Monitor, Zap } from "lucide-react";
 import { useState } from "react";
-import { pcsData } from "@/data/pcsData";
 import { useProducts } from "@/contexts/ProductsContext";
 
 const PcsPage = () => {
   const navigate = useNavigate();
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
-  const { pcs } = useProducts();
-
-  // Combinar dados do arquivo com dados do contexto
-  const allPcs = [...pcsData, ...pcs];
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const { pcs, loading } = useProducts();
 
   // Separar PCs por categoria baseado no preço
   const pcsCategories = {
-    essencial: allPcs.filter(pc => {
-      const price = typeof pc.price === 'string' ? 
-        parseInt(pc.price.replace('R$ ', '').replace('.', '')) : 
-        pc.price;
-      return price <= 2500;
-    }),
-    performance: allPcs.filter(pc => {
-      const price = typeof pc.price === 'string' ? 
-        parseInt(pc.price.replace('R$ ', '').replace('.', '')) : 
-        pc.price;
-      return price > 2500 && price <= 5000;
-    }),
-    avancada: allPcs.filter(pc => {
-      const price = typeof pc.price === 'string' ? 
-        parseInt(pc.price.replace('R$ ', '').replace('.', '')) : 
-        pc.price;
-      return price > 5000;
-    })
+    essencial: pcs.filter(pc => pc.price <= 2500),
+    performance: pcs.filter(pc => pc.price > 2500 && pc.price <= 5000),
+    avancada: pcs.filter(pc => pc.price > 5000)
   };
 
-  const formatPrice = (price: string | number) => {
-    if (typeof price === 'string') return price;
+  const formatPrice = (price: number) => {
     return new Intl.NumberFormat('pt-BR', {
       style: 'currency',
       currency: 'BRL'
@@ -73,12 +54,13 @@ const PcsPage = () => {
             </div>
           )}
           
-          {/* PC Image */}
+          {/* PC Image - Corrigido para cobrir 100% */}
           <div className="relative h-32 md:h-48 overflow-hidden rounded-t-lg mt-2 mx-2 flex-shrink-0">
             <img 
               src={pc.image || "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png"} 
               alt={pc.name}
-              className="w-full h-full object-contain bg-gray-800 p-2"
+              className="w-full h-full object-cover"
+              style={{ objectFit: 'cover', objectPosition: 'center' }}
             />
             <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
           </div>
@@ -117,18 +99,31 @@ const PcsPage = () => {
           </CardContent>
         </Card>
       ))}
+      
+      {products.length === 0 && !loading && (
+        <div className="col-span-full text-center py-12 text-gray-400">
+          <p className="text-lg">Nenhum PC cadastrado nesta categoria ainda.</p>
+        </div>
+      )}
     </div>
   );
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-cyan-400 mx-auto mb-4"></div>
+          <p className="text-cyan-400">Carregando PCs...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Product Page Background */}
       <ProductPageBackground />
-
-      {/* Header */}
       <PcsHeader />
 
-      {/* PCs Tabs */}
       <main className="relative z-10 px-2 md:px-4 py-6 md:py-12">
         <div className="max-w-7xl mx-auto">
           <Tabs defaultValue="essencial" className="w-full">
@@ -137,19 +132,19 @@ const PcsPage = () => {
                 value="essencial" 
                 className="data-[state=active]:bg-cyan-400 data-[state=active]:text-black text-xs md:text-sm px-2 py-2 md:py-3"
               >
-                Linha Essencial
+                Linha Essencial ({pcsCategories.essencial.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="performance" 
                 className="data-[state=active]:bg-cyan-400 data-[state=active]:text-black text-xs md:text-sm px-2 py-2 md:py-3"
               >
-                Linha Performance
+                Linha Performance ({pcsCategories.performance.length})
               </TabsTrigger>
               <TabsTrigger 
                 value="avancada" 
                 className="data-[state=active]:bg-cyan-400 data-[state=active]:text-black text-xs md:text-sm px-2 py-2 md:py-3"
               >
-                Linha Avançada
+                Linha Avançada ({pcsCategories.avancada.length})
               </TabsTrigger>
             </TabsList>
             
@@ -160,7 +155,6 @@ const PcsPage = () => {
         </div>
       </main>
 
-      {/* Footer */}
       <PcsFooter />
 
       <style>
@@ -175,18 +169,6 @@ const PcsPage = () => {
           }
           .floating-animation {
             animation: floating 3s ease-in-out infinite;
-          }
-          .floating-animation:nth-child(1) {
-            animation-delay: 0s;
-          }
-          .floating-animation:nth-child(2) {
-            animation-delay: 0.3s;
-          }
-          .floating-animation:nth-child(3) {
-            animation-delay: 0.6s;
-          }
-          .floating-animation:nth-child(4) {
-            animation-delay: 0.9s;
           }
           .line-clamp-1 {
             display: -webkit-box;

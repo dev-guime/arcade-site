@@ -6,15 +6,16 @@ import { Cpu, HardDrive, Monitor, Zap } from "lucide-react";
 
 interface PcCardProps {
   pc: {
-    id: number;
+    id: string;
     name: string;
-    price: string;
+    price: string | number;
     description: string;
     specs: string[];
     highlight: boolean;
+    image?: string;
   };
-  hoveredId: number | null;
-  borderColors: {[key: number]: string};
+  hoveredId: string | null;
+  borderColors: {[key: string]: string};
   onMouseEnter: () => void;
   onMouseLeave: () => void;
   variant?: 'mobile' | 'desktop';
@@ -30,6 +31,14 @@ export const PcCard = ({
 }: PcCardProps) => {
   const navigate = useNavigate();
   const isMobile = variant === 'mobile';
+
+  const formatPrice = (price: string | number) => {
+    if (typeof price === 'string') return price;
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(price);
+  };
 
   return (
     <Card
@@ -59,12 +68,13 @@ export const PcCard = ({
         </div>
       )}
       
-      {/* PC Image */}
+      {/* PC Image - Corrigido para cobrir 100% sem aumentar o quadro */}
       <div className={`relative ${isMobile ? 'h-32' : 'h-40'} overflow-hidden rounded-t-lg mt-2 flex-shrink-0`}>
         <img 
-          src="/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png" 
+          src={pc.image || "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png"} 
           alt={pc.name}
-          className="w-full h-full object-contain bg-gray-800 p-2"
+          className="w-full h-full object-cover"
+          style={{ objectFit: 'cover', objectPosition: 'center' }}
         />
         <div className="absolute inset-0 bg-gradient-to-t from-gray-900/20 to-transparent"></div>
       </div>
@@ -77,7 +87,7 @@ export const PcCard = ({
           {pc.description}
         </CardDescription>
         <div className={`${isMobile ? 'text-lg' : 'text-xl'} font-bold text-white`}>
-          {pc.price}
+          {formatPrice(pc.price)}
         </div>
       </CardHeader>
       

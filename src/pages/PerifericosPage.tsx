@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -5,155 +6,38 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Headphones, Keyboard, Mouse, Gamepad2, Monitor, Speaker, Webcam, MousePointer, Mic, Camera, Volume2, Cpu } from "lucide-react";
 import { ProductPageBackground } from "@/components/ProductPageBackground";
 import { useState } from "react";
+import { useProducts } from "@/contexts/ProductsContext";
 
 const PerifericosPage = () => {
   const navigate = useNavigate();
-  const [hoveredId, setHoveredId] = useState<number | null>(null);
+  const [hoveredId, setHoveredId] = useState<string | null>(null);
+  const { perifericos, loading } = useProducts();
 
-  const perifericos = {
-    combos: [
-      {
-        id: 1,
-        name: "COMBO GAMER RGB",
-        price: "R$ 299",
-        description: "Teclado + Mouse + Headset com RGB",
-        specs: ["Teclado Mecânico RGB", "Mouse 6400 DPI", "Headset 7.1", "Mousepad Grande"],
-        highlight: true
-      },
-      {
-        id: 2,
-        name: "COMBO STREAMER",
-        price: "R$ 459",
-        description: "Kit completo para streaming",
-        specs: ["Microfone USB", "Webcam 4K", "Headset Pro", "Iluminação RGB"],
-        highlight: false
-      }
-    ],
-    audio: [
-      {
-        id: 3,
-        name: "HEADSET PRO",
-        price: "R$ 199",
-        description: "Audio premium para jogos",
-        specs: ["Drivers 50mm", "Microfone Removível", "Almofadas Confortáveis", "Cabo 2m"],
-        highlight: false
-      },
-      {
-        id: 4,
-        name: "CAIXA DE SOM RGB",
-        price: "R$ 179",
-        description: "Som potente com efeitos RGB",
-        specs: ["40W RMS", "Bluetooth 5.0", "RGB Sincronizado", "Controle remoto"],
-        highlight: false
-      },
-      {
-        id: 5,
-        name: "MICROFONE STREAM",
-        price: "R$ 359",
-        description: "Microfone profissional para streaming",
-        specs: ["Condensador", "USB plug & play", "Padrão cardioide", "Braço articulado"],
-        highlight: false
-      }
-    ],
-    controles: [
-      {
-        id: 6,
-        name: "TECLADO MECÂNICO",
-        price: "R$ 249",
-        description: "Switch azul com RGB",
-        specs: ["Switch Outemu Blue", "RGB Individual", "Anti-Ghosting", "Cabo USB-C"],
-        highlight: false
-      },
-      {
-        id: 7,
-        name: "MOUSE GAMER PRO",
-        price: "R$ 149",
-        description: "Precisão máxima para FPS",
-        specs: ["12000 DPI", "8 Botões", "RGB Customizável", "Sensor Óptico"],
-        highlight: false
-      },
-      {
-        id: 8,
-        name: "CONTROLE WIRELESS",
-        price: "R$ 189",
-        description: "Controle sem fio para PC",
-        specs: ["Bluetooth 5.0", "Vibração dual", "40h bateria", "RGB personalizável"],
-        highlight: false
-      },
-      {
-        id: 9,
-        name: "MOUSEPAD XXL",
-        price: "R$ 79",
-        description: "Mousepad grande com bordas costuradas",
-        specs: ["90x40cm", "Base antiderrapante", "Bordas costuradas", "Superfície lisa"],
-        highlight: false
-      }
-    ],
-    video: [
-      {
-        id: 10,
-        name: "MONITOR 24' 144HZ",
-        price: "R$ 899",
-        description: "Monitor gamer com alta taxa de atualização",
-        specs: ["24 polegadas", "144Hz", "1ms", "FreeSync"],
-        highlight: false
-      },
-      {
-        id: 11,
-        name: "WEBCAM 4K",
-        price: "R$ 299",
-        description: "Webcam profissional para streaming",
-        specs: ["4K 30fps", "Autofoco", "Microfone integrado", "USB 3.0"],
-        highlight: false
-      },
-      {
-        id: 12,
-        name: "MONITOR ULTRAWIDE",
-        price: "R$ 1.599",
-        description: "Monitor ultrawide 34' curvo",
-        specs: ["34 polegadas", "100Hz", "1440p", "Curvo"],
-        highlight: false
-      }
-    ],
-    setup: [
-      {
-        id: 13,
-        name: "KIT ILUMINAÇÃO",
-        price: "R$ 129",
-        description: "Kit RGB para setup gamer",
-        specs: ["Fita LED 5m", "Controle remoto", "16 milhões cores", "Sincronização"],
-        highlight: false
-      },
-      {
-        id: 14,
-        name: "COOLER RGB",
-        price: "R$ 89",
-        description: "Cooler com iluminação RGB",
-        specs: ["120mm", "RGB ajustável", "Baixo ruído", "PWM"],
-        highlight: false
-      },
-      {
-        id: 15,
-        name: "SUPORTE MONITOR",
-        price: "R$ 159",
-        description: "Suporte articulado para monitor",
-        specs: ["Até 32 polegadas", "Rotação 360°", "Altura ajustável", "Base robusta"],
-        highlight: false
-      }
-    ]
+  // Separar periféricos por categoria
+  const perifericosCategories = {
+    combos: perifericos.filter(p => p.category === 'combo'),
+    audio: perifericos.filter(p => p.category === 'audio'),
+    controles: perifericos.filter(p => p.category === 'controle'),
+    video: perifericos.filter(p => p.category === 'video'),
+    setup: perifericos.filter(p => p.category === 'setup')
   };
 
-  const getIcon = (name: string) => {
-    if (name.includes("COMBO")) return <Gamepad2 className="w-16 h-16 text-pink-400" />;
-    if (name.includes("HEADSET") || name.includes("CAIXA") || name.includes("MICROFONE")) return <Headphones className="w-16 h-16 text-pink-400" />;
-    if (name.includes("TECLADO")) return <Keyboard className="w-16 h-16 text-pink-400" />;
-    if (name.includes("MOUSE") && !name.includes("MOUSEPAD")) return <Mouse className="w-16 h-16 text-pink-400" />;
-    if (name.includes("CONTROLE")) return <Gamepad2 className="w-16 h-16 text-pink-400" />;
-    if (name.includes("MONITOR")) return <Monitor className="w-16 h-16 text-pink-400" />;
-    if (name.includes("WEBCAM")) return <Camera className="w-16 h-16 text-pink-400" />;
-    if (name.includes("MOUSEPAD")) return <MousePointer className="w-16 h-16 text-pink-400" />;
-    if (name.includes("KIT") || name.includes("COOLER") || name.includes("SUPORTE")) return <Cpu className="w-16 h-16 text-pink-400" />;
-    return <Gamepad2 className="w-16 h-16 text-pink-400" />;
+  const formatPrice = (price: number) => {
+    return new Intl.NumberFormat('pt-BR', {
+      style: 'currency',
+      currency: 'BRL'
+    }).format(price);
+  };
+
+  const getIcon = (category: string) => {
+    switch (category) {
+      case 'combo': return <Gamepad2 className="w-16 h-16 text-pink-400" />;
+      case 'audio': return <Headphones className="w-16 h-16 text-pink-400" />;
+      case 'controle': return <Mouse className="w-16 h-16 text-pink-400" />;
+      case 'video': return <Monitor className="w-16 h-16 text-pink-400" />;
+      case 'setup': return <Cpu className="w-16 h-16 text-pink-400" />;
+      default: return <Gamepad2 className="w-16 h-16 text-pink-400" />;
+    }
   };
 
   const renderProducts = (products: any[]) => (
@@ -173,17 +57,28 @@ const PerifericosPage = () => {
           onMouseEnter={() => setHoveredId(item.id)}
           onMouseLeave={() => setHoveredId(null)}
         >
-          {item.highlight && (
+          {item.highlight && item.highlight_text && (
             <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 z-20">
               <span className="bg-gradient-to-r from-pink-400 to-orange-500 px-4 py-2 rounded-full text-sm font-bold border-2 border-pink-400 shadow-[0_0_15px_rgba(236,72,153,0.6)]">
-                MAIS VENDIDO
+                {item.highlight_text}
               </span>
             </div>
           )}
           
-          {/* Placeholder Image */}
-          <div className="relative h-48 bg-gradient-to-br from-gray-800 to-gray-700 flex items-center justify-center rounded-t-lg mt-2 mx-2">
-            {getIcon(item.name)}
+          {/* Image or Icon */}
+          <div className="relative h-48 overflow-hidden rounded-t-lg mt-2 mx-2 flex items-center justify-center">
+            {item.image ? (
+              <img 
+                src={item.image} 
+                alt={item.name}
+                className="w-full h-full object-cover"
+                style={{ objectFit: 'cover', objectPosition: 'center' }}
+              />
+            ) : (
+              <div className="bg-gradient-to-br from-gray-800 to-gray-700 w-full h-full flex items-center justify-center">
+                {getIcon(item.category)}
+              </div>
+            )}
           </div>
           
           <CardHeader>
@@ -194,13 +89,13 @@ const PerifericosPage = () => {
               {item.description}
             </CardDescription>
             <div className="text-2xl font-bold text-white">
-              {item.price}
+              {formatPrice(item.price)}
             </div>
           </CardHeader>
           
           <CardContent>
             <div className="space-y-2 mb-6">
-              {item.specs.map((spec: string, index: number) => (
+              {item.specs && item.specs.map((spec: string, index: number) => (
                 <div key={index} className="flex items-center text-gray-300 text-sm">
                   <div className="w-2 h-2 bg-pink-400 rounded-full mr-2"></div>
                   <span>{spec}</span>
@@ -217,12 +112,28 @@ const PerifericosPage = () => {
           </CardContent>
         </Card>
       ))}
+      
+      {products.length === 0 && !loading && (
+        <div className="col-span-full text-center py-12 text-gray-400">
+          <p className="text-lg">Nenhum periférico cadastrado nesta categoria ainda.</p>
+        </div>
+      )}
     </div>
   );
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-black text-white relative overflow-hidden flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-pink-400 mx-auto mb-4"></div>
+          <p className="text-pink-400">Carregando periféricos...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-black text-white relative overflow-hidden">
-      {/* Product Page Background */}
       <ProductPageBackground />
 
       {/* Header */}
@@ -249,27 +160,27 @@ const PerifericosPage = () => {
           <Tabs defaultValue="combos" className="w-full">
             <TabsList className="grid w-full grid-cols-5 bg-gray-900/50 border border-gray-700 mb-8">
               <TabsTrigger value="combos" className="data-[state=active]:bg-pink-400 data-[state=active]:text-black">
-                Combos
+                Combos ({perifericosCategories.combos.length})
               </TabsTrigger>
               <TabsTrigger value="audio" className="data-[state=active]:bg-pink-400 data-[state=active]:text-black">
-                Áudio
+                Áudio ({perifericosCategories.audio.length})
               </TabsTrigger>
               <TabsTrigger value="controles" className="data-[state=active]:bg-pink-400 data-[state=active]:text-black">
-                Controles
+                Controles ({perifericosCategories.controles.length})
               </TabsTrigger>
               <TabsTrigger value="video" className="data-[state=active]:bg-pink-400 data-[state=active]:text-black">
-                Vídeo
+                Vídeo ({perifericosCategories.video.length})
               </TabsTrigger>
               <TabsTrigger value="setup" className="data-[state=active]:bg-pink-400 data-[state=active]:text-black">
-                Setup
+                Setup ({perifericosCategories.setup.length})
               </TabsTrigger>
             </TabsList>
             
-            <TabsContent value="combos">{renderProducts(perifericos.combos)}</TabsContent>
-            <TabsContent value="audio">{renderProducts(perifericos.audio)}</TabsContent>
-            <TabsContent value="controles">{renderProducts(perifericos.controles)}</TabsContent>
-            <TabsContent value="video">{renderProducts(perifericos.video)}</TabsContent>
-            <TabsContent value="setup">{renderProducts(perifericos.setup)}</TabsContent>
+            <TabsContent value="combos">{renderProducts(perifericosCategories.combos)}</TabsContent>
+            <TabsContent value="audio">{renderProducts(perifericosCategories.audio)}</TabsContent>
+            <TabsContent value="controles">{renderProducts(perifericosCategories.controles)}</TabsContent>
+            <TabsContent value="video">{renderProducts(perifericosCategories.video)}</TabsContent>
+            <TabsContent value="setup">{renderProducts(perifericosCategories.setup)}</TabsContent>
           </Tabs>
         </div>
       </main>
@@ -296,18 +207,6 @@ const PerifericosPage = () => {
           }
           .floating-animation {
             animation: floating 3s ease-in-out infinite;
-          }
-          .floating-animation:nth-child(1) {
-            animation-delay: 0s;
-          }
-          .floating-animation:nth-child(2) {
-            animation-delay: 0.3s;
-          }
-          .floating-animation:nth-child(3) {
-            animation-delay: 0.6s;
-          }
-          .floating-animation:nth-child(4) {
-            animation-delay: 0.9s;
           }
         `}
       </style>

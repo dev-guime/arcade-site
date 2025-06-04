@@ -1,17 +1,10 @@
 
 import { ReactNode } from "react";
-import { 
-  Sidebar, 
-  SidebarContent, 
-  SidebarHeader, 
-  SidebarMenu, 
-  SidebarMenuButton, 
-  SidebarMenuItem, 
-  SidebarProvider 
-} from "@/components/ui/sidebar";
-import { Computer, Gamepad2, LogOut, User } from "lucide-react";
-import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { useNavigate } from "react-router-dom";
+import { LogOut, BarChart3, Computer, Gamepad2, Package, ArrowLeft } from "lucide-react";
+import { useAuth } from "@/contexts/AuthContext";
 
 interface AdminLayoutProps {
   children: ReactNode;
@@ -20,86 +13,84 @@ interface AdminLayoutProps {
 }
 
 export const AdminLayout = ({ children, activeTab, onTabChange }: AdminLayoutProps) => {
+  const navigate = useNavigate();
   const { logout } = useAuth();
 
-  const menuItems = [
-    {
-      id: "dashboard",
-      title: "Dashboard",
-      icon: User,
-    },
-    {
-      id: "pcs",
-      title: "Gerenciar PCs",
-      icon: Computer,
-    },
-    {
-      id: "perifericos",
-      title: "Gerenciar Periféricos",
-      icon: Gamepad2,
-    },
+  const handleLogout = () => {
+    logout();
+    navigate("/");
+  };
+
+  const tabs = [
+    { id: "dashboard", label: "Dashboard", icon: BarChart3 },
+    { id: "pcs", label: "Gerenciar PCs", icon: Computer },
+    { id: "perifericos", label: "Gerenciar Periféricos", icon: Gamepad2 },
+    { id: "examples", label: "Gerenciar Exemplos", icon: Package },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <SidebarProvider>
-        <div className="flex w-full min-h-screen">
-          <Sidebar className="border-r border-slate-700/50">
-            <div className="bg-slate-900/95 backdrop-blur-sm h-full border-r border-slate-700/30">
-              <SidebarHeader className="p-6 border-b border-slate-700/50">
-                <div className="flex items-center space-x-3">
-                  <img 
-                    src="/lovable-uploads/4f4e5f19-8048-4f7d-8fc2-3e63fab60673.png" 
-                    alt="Logo" 
-                    className="w-8 h-8"
-                  />
-                  <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    Admin Panel
-                  </h2>
-                </div>
-              </SidebarHeader>
-              
-              <SidebarContent className="p-4">
-                <SidebarMenu>
-                  {menuItems.map((item) => (
-                    <SidebarMenuItem key={item.id}>
-                      <SidebarMenuButton
-                        onClick={() => onTabChange(item.id)}
-                        isActive={activeTab === item.id}
-                        className={`w-full justify-start text-slate-300 hover:text-white hover:bg-slate-800/50 transition-all duration-200 rounded-lg mb-2 ${
-                          activeTab === item.id 
-                            ? 'bg-gradient-to-r from-blue-500/20 to-purple-500/20 text-blue-400 border-l-4 border-blue-400 shadow-lg' 
-                            : 'hover:shadow-md'
-                        }`}
-                      >
-                        <item.icon className="w-5 h-5" />
-                        <span className="font-medium">{item.title}</span>
-                      </SidebarMenuButton>
-                    </SidebarMenuItem>
-                  ))}
-                </SidebarMenu>
-                
-                <div className="mt-auto pt-6">
-                  <Button
-                    onClick={logout}
-                    variant="outline"
-                    className="w-full border-red-500/50 text-red-400 hover:bg-red-500/20 hover:text-red-300 bg-slate-800/50 backdrop-blur-sm transition-all duration-200"
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Sair
-                  </Button>
-                </div>
-              </SidebarContent>
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+      {/* Header */}
+      <header className="border-b border-slate-700/50 bg-slate-800/50 backdrop-blur-sm">
+        <div className="px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button
+                onClick={() => navigate('/')}
+                variant="ghost"
+                className="text-slate-400 hover:text-slate-300 hover:bg-slate-700/50"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Voltar ao Site
+              </Button>
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
+                Painel Administrativo
+              </h1>
             </div>
-          </Sidebar>
-          
-          <main className="flex-1 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 p-6 overflow-hidden">
-            <div className="bg-slate-900/30 backdrop-blur-xl rounded-2xl border border-slate-700/30 shadow-2xl h-full overflow-auto">
-              {children}
-            </div>
-          </main>
+            <Button
+              onClick={handleLogout}
+              variant="outline"
+              className="border-red-500/50 text-red-400 hover:bg-red-500/20 hover:border-red-400 bg-transparent"
+            >
+              <LogOut className="mr-2 h-4 w-4" />
+              Sair
+            </Button>
+          </div>
         </div>
-      </SidebarProvider>
+      </header>
+
+      {/* Navigation Tabs */}
+      <nav className="border-b border-slate-700/50 bg-slate-800/30 backdrop-blur-sm">
+        <div className="px-6">
+          <div className="flex space-x-1">
+            {tabs.map((tab) => {
+              const Icon = tab.icon;
+              return (
+                <Button
+                  key={tab.id}
+                  onClick={() => onTabChange(tab.id)}
+                  variant="ghost"
+                  className={`px-6 py-4 rounded-none border-b-2 transition-all ${
+                    activeTab === tab.id
+                      ? "border-blue-400 text-blue-400 bg-slate-700/30"
+                      : "border-transparent text-slate-400 hover:text-slate-300 hover:bg-slate-700/20"
+                  }`}
+                >
+                  <Icon className="mr-2 h-4 w-4" />
+                  {tab.label}
+                </Button>
+              );
+            })}
+          </div>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="flex-1">
+        <Card className="m-6 bg-slate-800/30 backdrop-blur-sm border-slate-700/50 min-h-[calc(100vh-200px)]">
+          {children}
+        </Card>
+      </main>
     </div>
   );
 };

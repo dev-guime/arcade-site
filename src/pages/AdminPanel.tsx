@@ -6,6 +6,7 @@ import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { PcsList } from "@/components/admin/PcsList";
 import { AdminPerifericosForm } from "@/components/admin/AdminPerifericosForm";
 import { ProductList } from "@/components/admin/ProductList";
+import { ExamplesManagement } from "@/components/admin/ExamplesManagement";
 import { AdminLayout } from "@/components/admin/AdminLayout";
 
 const AdminPanel = () => {
@@ -36,6 +37,8 @@ const AdminPanel = () => {
             <ProductList type="perifericos" />
           </div>
         );
+      case "examples":
+        return <ExamplesManagement />;
       default:
         return <AdminDashboard />;
     }
