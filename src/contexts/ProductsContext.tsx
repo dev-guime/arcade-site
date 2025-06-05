@@ -84,12 +84,16 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const fetchPcs = async () => {
     try {
+      console.log('Fetching PCs...');
       const { data, error } = await supabase
         .from('pcs')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching PCs:', error);
+        throw error;
+      }
       
       const formattedPcs = data?.map(pc => ({
         ...pc,
@@ -98,10 +102,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(pc.secondary_images) ? pc.secondary_images.map(String) : [],
         description: pc.description || '',
         highlight_text: pc.highlight_text || '',
-        highlight_color: (pc as any).highlight_color || 'cyan',
+        highlight_color: pc.highlight_color || 'cyan',
         image: pc.image || '',
       })) || [];
       
+      console.log('PCs fetched successfully:', formattedPcs.length);
       setPcs(formattedPcs);
     } catch (error) {
       console.error('Error fetching PCs:', error);
@@ -115,12 +120,16 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const fetchPerifericos = async () => {
     try {
+      console.log('Fetching Periféricos...');
       const { data, error } = await supabase
         .from('perifericos')
         .select('*')
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching Periféricos:', error);
+        throw error;
+      }
       
       const formattedPerifericos = data?.map(periferico => ({
         ...periferico,
@@ -128,10 +137,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(periferico.secondary_images) ? periferico.secondary_images.map(String) : [],
         description: periferico.description || '',
         highlight_text: periferico.highlight_text || '',
-        highlight_color: (periferico as any).highlight_color || 'cyan',
+        highlight_color: periferico.highlight_color || 'cyan',
         image: periferico.image || '',
       })) || [];
       
+      console.log('Periféricos fetched successfully:', formattedPerifericos.length);
       setPerifericos(formattedPerifericos);
     } catch (error) {
       console.error('Error fetching Periféricos:', error);
@@ -145,12 +155,16 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const fetchDeliveredPcs = async () => {
     try {
+      console.log('Fetching Delivered PCs...');
       const { data, error } = await supabase
         .from('delivered_pcs')
         .select('*')
         .order('delivery_date', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching Delivered PCs:', error);
+        throw error;
+      }
       
       const formattedDeliveredPcs = data?.map(pc => ({
         ...pc,
@@ -158,6 +172,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         image: pc.image || '',
       })) || [];
       
+      console.log('Delivered PCs fetched successfully:', formattedDeliveredPcs.length);
       setDeliveredPcs(formattedDeliveredPcs);
     } catch (error) {
       console.error('Error fetching Delivered PCs:', error);
@@ -170,63 +185,47 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
   };
 
   const refreshData = async () => {
+    console.log('Refreshing all data...');
     setLoading(true);
     await Promise.all([fetchPcs(), fetchPerifericos(), fetchDeliveredPcs()]);
     setLoading(false);
+    console.log('Data refresh completed');
   };
 
   useEffect(() => {
     refreshData();
-
-    // Subscribe to realtime changes
-    const pcsChannel = supabase
-      .channel('pcs-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'pcs' }, () => {
-        fetchPcs();
-      })
-      .subscribe();
-
-    const perifericosChannel = supabase
-      .channel('perifericos-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'perifericos' }, () => {
-        fetchPerifericos();
-      })
-      .subscribe();
-
-    const deliveredPcsChannel = supabase
-      .channel('delivered-pcs-changes')
-      .on('postgres_changes', { event: '*', schema: 'public', table: 'delivered_pcs' }, () => {
-        fetchDeliveredPcs();
-      })
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(pcsChannel);
-      supabase.removeChannel(perifericosChannel);
-      supabase.removeChannel(deliveredPcsChannel);
-    };
   }, []);
 
   const addPc = async (newPc: Omit<Pc, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      const { error } = await supabase
-        .from('pcs')
-        .insert([{
-          name: newPc.name,
-          price: newPc.price,
-          category: newPc.category,
-          description: newPc.description,
-          specs: newPc.specs || [],
-          spec_icons: newPc.spec_icons || [],
-          secondary_images: newPc.secondary_images || [],
-          highlight: newPc.highlight,
-          highlight_text: newPc.highlight_text,
-          highlight_color: newPc.highlight_color,
-          image: newPc.image,
-        }]);
-
-      if (error) throw error;
+      console.log('Adding new PC:', newPc);
       
+      const insertData = {
+        name: newPc.name,
+        price: newPc.price,
+        category: newPc.category,
+        description: newPc.description || '',
+        specs: newPc.specs || [],
+        spec_icons: newPc.spec_icons || [],
+        secondary_images: newPc.secondary_images || [],
+        highlight: newPc.highlight || false,
+        highlight_text: newPc.highlight_text || null,
+        highlight_color: newPc.highlight_color || null,
+        image: newPc.image || null,
+      };
+
+      const { data, error } = await supabase
+        .from('pcs')
+        .insert([insertData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase error adding PC:', error);
+        throw error;
+      }
+      
+      console.log('PC added successfully:', data);
       await fetchPcs();
       
       toast({
@@ -246,23 +245,33 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const addPeriferico = async (newPeriferico: Omit<Periferico, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      const { error } = await supabase
-        .from('perifericos')
-        .insert([{
-          name: newPeriferico.name,
-          price: newPeriferico.price,
-          category: newPeriferico.category,
-          description: newPeriferico.description,
-          specs: newPeriferico.specs || [],
-          secondary_images: newPeriferico.secondary_images || [],
-          highlight: newPeriferico.highlight,
-          highlight_text: newPeriferico.highlight_text,
-          highlight_color: newPeriferico.highlight_color,
-          image: newPeriferico.image,
-        }]);
-
-      if (error) throw error;
+      console.log('Adding new Periférico:', newPeriferico);
       
+      const insertData = {
+        name: newPeriferico.name,
+        price: newPeriferico.price,
+        category: newPeriferico.category,
+        description: newPeriferico.description || '',
+        specs: newPeriferico.specs || [],
+        secondary_images: newPeriferico.secondary_images || [],
+        highlight: newPeriferico.highlight || false,
+        highlight_text: newPeriferico.highlight_text || null,
+        highlight_color: newPeriferico.highlight_color || null,
+        image: newPeriferico.image || null,
+      };
+
+      const { data, error } = await supabase
+        .from('perifericos')
+        .insert([insertData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase error adding Periférico:', error);
+        throw error;
+      }
+      
+      console.log('Periférico added successfully:', data);
       await fetchPerifericos();
       
       toast({
@@ -282,19 +291,29 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const addDeliveredPc = async (newDeliveredPc: Omit<DeliveredPc, 'id' | 'created_at' | 'updated_at'>) => {
     try {
-      const { error } = await supabase
-        .from('delivered_pcs')
-        .insert([{
-          name: newDeliveredPc.name,
-          customer: newDeliveredPc.customer,
-          delivery_date: newDeliveredPc.delivery_date,
-          location: newDeliveredPc.location,
-          specs: newDeliveredPc.specs || [],
-          image: newDeliveredPc.image,
-        }]);
-
-      if (error) throw error;
+      console.log('Adding new Delivered PC:', newDeliveredPc);
       
+      const insertData = {
+        name: newDeliveredPc.name,
+        customer: newDeliveredPc.customer,
+        delivery_date: newDeliveredPc.delivery_date,
+        location: newDeliveredPc.location,
+        specs: newDeliveredPc.specs || [],
+        image: newDeliveredPc.image || null,
+      };
+
+      const { data, error } = await supabase
+        .from('delivered_pcs')
+        .insert([insertData])
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Supabase error adding Delivered PC:', error);
+        throw error;
+      }
+      
+      console.log('Delivered PC added successfully:', data);
       await fetchDeliveredPcs();
       
       toast({
@@ -314,10 +333,9 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const updatePc = async (id: string, updatedPc: Partial<Pc>) => {
     try {
-      console.log('Atualizando PC', id + ':', updatedPc);
-      const updateData: any = {
-        updated_at: new Date().toISOString(),
-      };
+      console.log('Updating PC', id, ':', updatedPc);
+      
+      const updateData: any = {};
 
       // Only include fields that exist in the database
       if (updatedPc.name !== undefined) updateData.name = updatedPc.name;
@@ -332,13 +350,19 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (updatedPc.highlight_color !== undefined) updateData.highlight_color = updatedPc.highlight_color;
       if (updatedPc.image !== undefined) updateData.image = updatedPc.image;
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('pcs')
         .update(updateData)
-        .eq('id', id);
+        .eq('id', id)
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error updating PC:', error);
+        throw error;
+      }
       
+      console.log('PC updated successfully:', data);
       await fetchPcs();
       
       toast({
@@ -358,9 +382,9 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const updatePeriferico = async (id: string, updatedPeriferico: Partial<Periferico>) => {
     try {
-      const updateData: any = {
-        updated_at: new Date().toISOString(),
-      };
+      console.log('Updating Periférico', id, ':', updatedPeriferico);
+      
+      const updateData: any = {};
 
       // Only include fields that exist in the database
       if (updatedPeriferico.name !== undefined) updateData.name = updatedPeriferico.name;
@@ -374,13 +398,19 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (updatedPeriferico.highlight_color !== undefined) updateData.highlight_color = updatedPeriferico.highlight_color;
       if (updatedPeriferico.image !== undefined) updateData.image = updatedPeriferico.image;
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('perifericos')
         .update(updateData)
-        .eq('id', id);
+        .eq('id', id)
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error updating Periférico:', error);
+        throw error;
+      }
       
+      console.log('Periférico updated successfully:', data);
       await fetchPerifericos();
       
       toast({
@@ -400,9 +430,9 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const updateDeliveredPc = async (id: string, updatedDeliveredPc: Partial<DeliveredPc>) => {
     try {
-      const updateData: any = {
-        updated_at: new Date().toISOString(),
-      };
+      console.log('Updating Delivered PC', id, ':', updatedDeliveredPc);
+      
+      const updateData: any = {};
 
       if (updatedDeliveredPc.name !== undefined) updateData.name = updatedDeliveredPc.name;
       if (updatedDeliveredPc.customer !== undefined) updateData.customer = updatedDeliveredPc.customer;
@@ -411,13 +441,19 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (updatedDeliveredPc.specs !== undefined) updateData.specs = updatedDeliveredPc.specs;
       if (updatedDeliveredPc.image !== undefined) updateData.image = updatedDeliveredPc.image;
 
-      const { error } = await supabase
+      const { data, error } = await supabase
         .from('delivered_pcs')
         .update(updateData)
-        .eq('id', id);
+        .eq('id', id)
+        .select()
+        .single();
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error updating Delivered PC:', error);
+        throw error;
+      }
       
+      console.log('Delivered PC updated successfully:', data);
       await fetchDeliveredPcs();
       
       toast({
@@ -437,13 +473,18 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const deletePc = async (id: string) => {
     try {
+      console.log('Deleting PC:', id);
       const { error } = await supabase
         .from('pcs')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error deleting PC:', error);
+        throw error;
+      }
       
+      console.log('PC deleted successfully');
       await fetchPcs();
       
       toast({
@@ -463,13 +504,18 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const deletePeriferico = async (id: string) => {
     try {
+      console.log('Deleting Periférico:', id);
       const { error } = await supabase
         .from('perifericos')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error deleting Periférico:', error);
+        throw error;
+      }
       
+      console.log('Periférico deleted successfully');
       await fetchPerifericos();
       
       toast({
@@ -489,13 +535,18 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const deleteDeliveredPc = async (id: string) => {
     try {
+      console.log('Deleting Delivered PC:', id);
       const { error } = await supabase
         .from('delivered_pcs')
         .delete()
         .eq('id', id);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Supabase error deleting Delivered PC:', error);
+        throw error;
+      }
       
+      console.log('Delivered PC deleted successfully');
       await fetchDeliveredPcs();
       
       toast({
