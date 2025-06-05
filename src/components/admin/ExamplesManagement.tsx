@@ -3,67 +3,51 @@ import { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Eye, Edit, Trash2, Plus, Package, ExternalLink } from "lucide-react";
+import { Edit, Trash2, Plus, Package, ExternalLink } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { AddExampleForm } from "./AddExampleForm";
-
-interface DeliveredPc {
-  id: string;
-  name: string;
-  customer: string;
-  deliveryDate: string;
-  image?: string;
-  specs: string[];
-  location: string;
-}
+import { useProducts } from "@/contexts/ProductsContext";
 
 export const ExamplesManagement = () => {
   const { toast } = useToast();
-  const [deliveredPcs, setDeliveredPcs] = useState<DeliveredPc[]>([
-    {
-      id: "1",
-      name: "PC Gamer RTX 4060",
-      customer: "João Silva",
-      deliveryDate: "2024-01-15",
-      specs: ["RTX 4060", "Ryzen 5 5600X", "16GB RAM", "SSD 500GB"],
-      location: "Londrina-PR"
-    },
-    {
-      id: "2", 
-      name: "PC Streamer Pro",
-      customer: "Maria Santos",
-      deliveryDate: "2024-01-10",
-      specs: ["RTX 4070", "Intel i7-12700F", "32GB RAM", "SSD 1TB"],
-      location: "Maringá-PR"
-    }
-  ]);
+  const { deliveredPcs, deleteDeliveredPc, loading } = useProducts();
   const [showAddForm, setShowAddForm] = useState(false);
-  const [editingPc, setEditingPc] = useState<DeliveredPc | null>(null);
+  const [editingPc, setEditingPc] = useState<any>(null);
 
-  const handleDelete = (id: string) => {
+  const handleDelete = async (id: string) => {
     if (confirm("Tem certeza que deseja remover este exemplo?")) {
-      setDeliveredPcs(prev => prev.filter(pc => pc.id !== id));
-      toast({
-        title: "Exemplo removido",
-        description: "Exemplo removido com sucesso!",
-      });
+      try {
+        await deleteDeliveredPc(id);
+        toast({
+          title: "Exemplo removido",
+          description: "Exemplo removido com sucesso!",
+        });
+      } catch (error) {
+        toast({
+          title: "Erro",
+          description: "Erro ao remover exemplo.",
+          variant: "destructive",
+        });
+      }
     }
   };
 
-  const handleAddExample = (data: any) => {
-    setDeliveredPcs(prev => [...prev, data]);
+  const handleAddExample = () => {
     setShowAddForm(false);
-  };
-
-  const handleViewOnSite = (pc: DeliveredPc) => {
-    // Simular visualização no site - pode ser implementado como modal ou página
     toast({
-      title: "Visualizar no Site",
-      description: `Visualizando ${pc.name} no site...`,
+      title: "Exemplo adicionado",
+      description: "Exemplo adicionado com sucesso!",
     });
   };
 
-  const handleEdit = (pc: DeliveredPc) => {
+  const handleViewOnSite = (pc: any) => {
+    toast({
+      title: "Visualizar no Site",
+      description: `Este PC aparece na seção "PCs Já Entregues" do site principal.`,
+    });
+  };
+
+  const handleEdit = (pc: any) => {
     setEditingPc(pc);
     toast({
       title: "Modo de Edição",
@@ -77,6 +61,20 @@ export const ExamplesManagement = () => {
         onBack={() => setShowAddForm(false)}
         onSubmit={handleAddExample}
       />
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="p-6">
+        <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50">
+          <CardContent className="p-6">
+            <div className="flex justify-center">
+              <p className="text-slate-400">Carregando exemplos...</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
@@ -116,14 +114,14 @@ export const ExamplesManagement = () => {
                     <p className="text-slate-400">Cliente: {pc.customer}</p>
                     <div className="flex items-center space-x-2 mt-1">
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
-                        Entregue em {new Date(pc.deliveryDate).toLocaleDateString('pt-BR')}
+                        Entregue em {new Date(pc.delivery_date).toLocaleDateString('pt-BR')}
                       </Badge>
                       <Badge variant="outline" className="text-slate-300 border-slate-500">
                         {pc.location}
                       </Badge>
                     </div>
                     <div className="flex flex-wrap gap-1 mt-2">
-                      {pc.specs.slice(0, 3).map((spec, index) => (
+                      {pc.specs.slice(0, 3).map((spec: string, index: number) => (
                         <span key={index} className="text-xs bg-slate-600/50 text-slate-300 px-2 py-1 rounded">
                           {spec}
                         </span>
