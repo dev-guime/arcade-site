@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -97,7 +98,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(pc.secondary_images) ? pc.secondary_images.map(String) : [],
         description: pc.description || '',
         highlight_text: pc.highlight_text || '',
-        highlight_color: pc.highlight_color || 'cyan',
+        highlight_color: (pc as any).highlight_color || 'cyan',
         image: pc.image || '',
       })) || [];
       
@@ -127,7 +128,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(periferico.secondary_images) ? periferico.secondary_images.map(String) : [],
         description: periferico.description || '',
         highlight_text: periferico.highlight_text || '',
-        highlight_color: periferico.highlight_color || 'cyan',
+        highlight_color: (periferico as any).highlight_color || 'cyan',
         image: periferico.image || '',
       })) || [];
       
@@ -227,6 +228,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) throw error;
       
       await fetchPcs();
+      
+      toast({
+        title: "Sucesso!",
+        description: "PC adicionado com sucesso!",
+      });
     } catch (error) {
       console.error('Error adding PC:', error);
       toast({
@@ -258,6 +264,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) throw error;
       
       await fetchPerifericos();
+      
+      toast({
+        title: "Sucesso!",
+        description: "Periférico adicionado com sucesso!",
+      });
     } catch (error) {
       console.error('Error adding Periférico:', error);
       toast({
@@ -285,6 +296,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) throw error;
       
       await fetchDeliveredPcs();
+      
+      toast({
+        title: "Sucesso!",
+        description: "Exemplo adicionado com sucesso!",
+      });
     } catch (error) {
       console.error('Error adding Delivered PC:', error);
       toast({
@@ -298,7 +314,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const updatePc = async (id: string, updatedPc: Partial<Pc>) => {
     try {
-      console.log('Atualizando pcs', id + ':', updatedPc);
+      console.log('Atualizando PC', id + ':', updatedPc);
       const updateData: any = {
         updated_at: new Date().toISOString(),
       };
@@ -324,6 +340,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) throw error;
       
       await fetchPcs();
+      
+      toast({
+        title: "Sucesso!",
+        description: "PC atualizado com sucesso!",
+      });
     } catch (error) {
       console.error('Error updating PC:', error);
       toast({
@@ -361,6 +382,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) throw error;
       
       await fetchPerifericos();
+      
+      toast({
+        title: "Sucesso!",
+        description: "Periférico atualizado com sucesso!",
+      });
     } catch (error) {
       console.error('Error updating Periférico:', error);
       toast({
@@ -393,6 +419,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) throw error;
       
       await fetchDeliveredPcs();
+      
+      toast({
+        title: "Sucesso!",
+        description: "Exemplo atualizado com sucesso!",
+      });
     } catch (error) {
       console.error('Error updating Delivered PC:', error);
       toast({
@@ -414,6 +445,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) throw error;
       
       await fetchPcs();
+      
+      toast({
+        title: "Sucesso!",
+        description: "PC removido com sucesso!",
+      });
     } catch (error) {
       console.error('Error deleting PC:', error);
       toast({
@@ -435,6 +471,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) throw error;
       
       await fetchPerifericos();
+      
+      toast({
+        title: "Sucesso!",
+        description: "Periférico removido com sucesso!",
+      });
     } catch (error) {
       console.error('Error deleting Periférico:', error);
       toast({
@@ -456,6 +497,11 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (error) throw error;
       
       await fetchDeliveredPcs();
+      
+      toast({
+        title: "Sucesso!",
+        description: "Exemplo removido com sucesso!",
+      });
     } catch (error) {
       console.error('Error deleting Delivered PC:', error);
       toast({

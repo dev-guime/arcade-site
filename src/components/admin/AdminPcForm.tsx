@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -92,50 +93,37 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
         }
       } else {
         await addPc(pcData);
-      }
-      
-      toast({
-        title: "Sucesso!",
-        description: editingPc ? "PC atualizado com sucesso!" : "PC adicionado com sucesso!",
-      });
-
-      if (!editingPc) {
         form.reset();
         setImage("");
       }
     } catch (error) {
       console.error('Error saving PC:', error);
-      toast({
-        title: "Erro",
-        description: "Erro ao salvar PC. Tente novamente.",
-        variant: "destructive",
-      });
     }
   };
 
   return (
     <Card className="bg-slate-800/50 backdrop-blur-sm border-slate-700/50">
       <CardHeader>
-        <CardTitle className="text-cyan-400 flex items-center gap-2">
-          <Computer className="w-5 h-5" />
+        <CardTitle className="text-cyan-400 flex items-center gap-2 text-lg lg:text-xl">
+          <Computer className="w-4 h-4 lg:w-5 lg:h-5" />
           {editingPc ? "Editar PC" : "Adicionar Novo PC"}
         </CardTitle>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 lg:p-6">
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-6">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 lg:space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
               <FormField
                 control={form.control}
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-300">Nome do PC</FormLabel>
+                    <FormLabel className="text-slate-300 text-sm lg:text-base">Nome do PC</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Ex: PC Gamer RTX 4060"
                         {...field}
-                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 text-sm lg:text-base"
                       />
                     </FormControl>
                     <FormMessage />
@@ -148,7 +136,7 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
                 name="price"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-300">Preço (R$)</FormLabel>
+                    <FormLabel className="text-slate-300 text-sm lg:text-base">Preço (R$)</FormLabel>
                     <FormControl>
                       <Input
                         type="number"
@@ -156,7 +144,7 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
                         placeholder="2500.00"
                         {...field}
                         onChange={(e) => field.onChange(parseFloat(e.target.value))}
-                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 text-sm lg:text-base"
                       />
                     </FormControl>
                     <FormMessage />
@@ -169,12 +157,12 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
                 name="category"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-slate-300">Categoria</FormLabel>
+                    <FormLabel className="text-slate-300 text-sm lg:text-base">Categoria</FormLabel>
                     <FormControl>
                       <Input
                         placeholder="Ex: Gamer, Office, Workstation"
                         {...field}
-                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                        className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 text-sm lg:text-base"
                       />
                     </FormControl>
                     <FormMessage />
@@ -194,7 +182,7 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
                           onCheckedChange={field.onChange}
                         />
                       </FormControl>
-                      <FormLabel className="text-slate-300">Destacar Produto</FormLabel>
+                      <FormLabel className="text-slate-300 text-sm lg:text-base">Destacar Produto</FormLabel>
                     </FormItem>
                   )}
                 />
@@ -202,18 +190,18 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
             </div>
 
             {isHighlighted && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 p-4 bg-slate-700/20 rounded-lg border border-slate-600/50">
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 p-3 lg:p-4 bg-slate-700/20 rounded-lg border border-slate-600/50">
                 <FormField
                   control={form.control}
                   name="highlight_text"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-slate-300">Texto do Destaque</FormLabel>
+                      <FormLabel className="text-slate-300 text-sm lg:text-base">Texto do Destaque</FormLabel>
                       <FormControl>
                         <Input
                           placeholder="Ex: MAIS VENDIDO, OFERTA ESPECIAL"
                           {...field}
-                          className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                          className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 text-sm lg:text-base"
                         />
                       </FormControl>
                       <FormMessage />
@@ -226,10 +214,10 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
                   name="highlight_color"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel className="text-slate-300">Cor da Borda</FormLabel>
+                      <FormLabel className="text-slate-300 text-sm lg:text-base">Cor da Borda</FormLabel>
                       <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
-                          <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
+                          <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white text-sm lg:text-base">
                             <SelectValue placeholder="Selecione uma cor" />
                           </SelectTrigger>
                         </FormControl>
@@ -256,12 +244,12 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
               name="description"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-slate-300">Descrição</FormLabel>
+                  <FormLabel className="text-slate-300 text-sm lg:text-base">Descrição</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="Descrição detalhada do PC..."
                       {...field}
-                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400"
+                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 text-sm lg:text-base min-h-20 lg:min-h-24"
                     />
                   </FormControl>
                   <FormMessage />
@@ -274,12 +262,12 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
               name="specs"
               render={({ field }) => (
                 <FormItem>
-                  <FormLabel className="text-slate-300">Especificações (uma por linha)</FormLabel>
+                  <FormLabel className="text-slate-300 text-sm lg:text-base">Especificações (uma por linha)</FormLabel>
                   <FormControl>
                     <Textarea
                       placeholder="RTX 4060&#10;Ryzen 5 5600X&#10;16GB RAM&#10;SSD 500GB"
                       {...field}
-                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 min-h-24"
+                      className="bg-slate-700/50 border-slate-600 text-white placeholder:text-slate-400 text-sm lg:text-base min-h-20 lg:min-h-24"
                     />
                   </FormControl>
                   <FormMessage />
@@ -288,7 +276,7 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
             />
 
             <div>
-              <label className="block text-sm font-medium text-slate-300 mb-2">
+              <label className="block text-sm lg:text-base font-medium text-slate-300 mb-2">
                 Imagem do PC
               </label>
               <ImageUploadButton
@@ -297,10 +285,10 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
               />
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex flex-col lg:flex-row gap-3 lg:gap-4 pt-4 lg:pt-6">
               <Button
                 type="submit"
-                className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white shadow-lg"
+                className="flex-1 bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 text-white shadow-lg text-sm lg:text-base py-2 lg:py-3"
               >
                 <Computer className="w-4 h-4 mr-2" />
                 {editingPc ? "Atualizar PC" : "Adicionar PC"}
@@ -310,7 +298,7 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
                   type="button"
                   variant="outline"
                   onClick={onCancel}
-                  className="border-slate-600 text-slate-300 hover:bg-slate-800"
+                  className="border-slate-600 text-slate-300 hover:bg-slate-800 text-sm lg:text-base py-2 lg:py-3"
                 >
                   Cancelar
                 </Button>
