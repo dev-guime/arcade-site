@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -228,7 +227,7 @@ export const AdminPcForm = ({ editingPc, onSubmit: onSubmitProp, onCancel }: Adm
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel className="text-slate-300">Cor da Borda</FormLabel>
-                      <Select onValueChange={field.onChange} defaultValue={field.value}>
+                      <Select onValueChange={field.onChange} value={field.value}>
                         <FormControl>
                           <SelectTrigger className="bg-slate-700/50 border-slate-600 text-white">
                             <SelectValue placeholder="Selecione uma cor" />

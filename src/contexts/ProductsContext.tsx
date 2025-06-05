@@ -97,7 +97,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(pc.secondary_images) ? pc.secondary_images.map(String) : [],
         description: pc.description || '',
         highlight_text: pc.highlight_text || '',
-        highlight_color: 'cyan',
+        highlight_color: pc.highlight_color || 'cyan',
         image: pc.image || '',
       })) || [];
       
@@ -127,7 +127,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(periferico.secondary_images) ? periferico.secondary_images.map(String) : [],
         description: periferico.description || '',
         highlight_text: periferico.highlight_text || '',
-        highlight_color: 'cyan',
+        highlight_color: periferico.highlight_color || 'cyan',
         image: periferico.image || '',
       })) || [];
       
@@ -220,6 +220,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
           secondary_images: newPc.secondary_images || [],
           highlight: newPc.highlight,
           highlight_text: newPc.highlight_text,
+          highlight_color: newPc.highlight_color,
           image: newPc.image,
         }]);
 
@@ -250,6 +251,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
           secondary_images: newPeriferico.secondary_images || [],
           highlight: newPeriferico.highlight,
           highlight_text: newPeriferico.highlight_text,
+          highlight_color: newPeriferico.highlight_color,
           image: newPeriferico.image,
         }]);
 
@@ -296,6 +298,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
 
   const updatePc = async (id: string, updatedPc: Partial<Pc>) => {
     try {
+      console.log('Atualizando pcs', id + ':', updatedPc);
       const updateData: any = {
         updated_at: new Date().toISOString(),
       };
@@ -310,6 +313,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (updatedPc.secondary_images !== undefined) updateData.secondary_images = updatedPc.secondary_images;
       if (updatedPc.highlight !== undefined) updateData.highlight = updatedPc.highlight;
       if (updatedPc.highlight_text !== undefined) updateData.highlight_text = updatedPc.highlight_text;
+      if (updatedPc.highlight_color !== undefined) updateData.highlight_color = updatedPc.highlight_color;
       if (updatedPc.image !== undefined) updateData.image = updatedPc.image;
 
       const { error } = await supabase
@@ -346,6 +350,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
       if (updatedPeriferico.secondary_images !== undefined) updateData.secondary_images = updatedPeriferico.secondary_images;
       if (updatedPeriferico.highlight !== undefined) updateData.highlight = updatedPeriferico.highlight;
       if (updatedPeriferico.highlight_text !== undefined) updateData.highlight_text = updatedPeriferico.highlight_text;
+      if (updatedPeriferico.highlight_color !== undefined) updateData.highlight_color = updatedPeriferico.highlight_color;
       if (updatedPeriferico.image !== undefined) updateData.image = updatedPeriferico.image;
 
       const { error } = await supabase

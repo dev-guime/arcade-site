@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { ArrowLeft, Plus, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { useProducts } from "@/contexts/ProductsContext";
+import { ImageUploadButton } from "./ImageUploadButton";
 
 interface AddExampleFormProps {
   onBack: () => void;
@@ -151,13 +152,11 @@ export const AddExampleForm = ({ onBack, onSubmit }: AddExampleFormProps) => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image" className="text-slate-300">URL da Imagem</Label>
-              <Input
-                id="image"
-                value={formData.image}
-                onChange={(e) => setFormData({...formData, image: e.target.value})}
-                placeholder="https://exemplo.com/imagem.jpg"
-                className="bg-slate-700/50 border-slate-600 text-white"
+              <Label className="text-slate-300">Imagem do PC</Label>
+              <ImageUploadButton
+                onImageUploaded={(url) => setFormData({...formData, image: url})}
+                currentImage={formData.image}
+                className="bg-slate-700/50 border-slate-600 text-white hover:bg-slate-600/50"
               />
             </div>
 
