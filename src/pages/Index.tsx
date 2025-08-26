@@ -22,7 +22,7 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           {/* Logo - Floating Animation */}
           <div className="mb-6 md:mb-8 flex justify-center">
-            <img src="/lovable-uploads/04d45766-a7e4-47c9-8c45-1e09419819f5.png" alt="Arcade Games Logo" className="w-32 h-32 md:w-48 md:h-48 floating-logo object-cover" />
+            <img src="" alt="Arcade Games Logo" className="w-32 h-32 md:w-48 md:h-48 floating-logo object-cover" />
           </div>
           
           {/* Improved Slogan with Mental Triggers */}
