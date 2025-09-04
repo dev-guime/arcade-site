@@ -22,7 +22,7 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           {/* Logo - Floating Animation */}
           <div className="mb-6 md:mb-8 flex justify-center">
-            <img src="/lovable-uploads/3b70286f-0c82-415d-8b33-86cd544d43e0.png" alt="Arena X Logo" className="w-32 h-32 md:w-48 md:h-48 floating-logo object-cover" />
+            <img src="/lovable-uploads/3b70286f-0c82-415d-8b33-86cd544d43e0.png" alt="Arena X Logo" className="w-60h-60 md:w-48 md:h-48 floating-logo object-cover" />
           </div>
           
           {/* Improved Slogan with Mental Triggers */}
