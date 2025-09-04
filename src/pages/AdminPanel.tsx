@@ -2,17 +2,11 @@
 import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
-import { AdminDashboard } from "@/components/admin/AdminDashboard";
-import { PcsList } from "@/components/admin/PcsList";
-import { AdminPerifericosForm } from "@/components/admin/AdminPerifericosForm";
-import { ProductList } from "@/components/admin/ProductList";
-import { ExamplesManagement } from "@/components/admin/ExamplesManagement";
-import { AdminLayout } from "@/components/admin/AdminLayout";
+import { NewAdminPanel } from "@/components/admin/NewAdminPanel";
 
 const AdminPanel = () => {
   const { isAuthenticated } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState("dashboard");
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -24,31 +18,7 @@ const AdminPanel = () => {
     return null;
   }
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case "dashboard":
-        return <AdminDashboard />;
-      case "pcs":
-        return <PcsList />;
-      case "perifericos":
-        return (
-          <div className="space-y-6">
-            <AdminPerifericosForm />
-            <ProductList type="perifericos" />
-          </div>
-        );
-      case "examples":
-        return <ExamplesManagement />;
-      default:
-        return <AdminDashboard />;
-    }
-  };
-
-  return (
-    <AdminLayout activeTab={activeTab} onTabChange={setActiveTab}>
-      {renderContent()}
-    </AdminLayout>
-  );
+  return <NewAdminPanel />;
 };
 
 export default AdminPanel;

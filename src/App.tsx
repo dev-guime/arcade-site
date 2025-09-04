@@ -6,6 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ProductsProvider } from "@/contexts/ProductsContext";
+import { AdminProvider } from "@/contexts/AdminContext";
 import Index from "./pages/Index";
 import LoginPage from "./pages/LoginPage";
 import PcsPage from "./pages/PcsPage";
@@ -20,21 +21,23 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <AuthProvider>
       <ProductsProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/login" element={<LoginPage />} />
-              <Route path="/pcs" element={<PcsPage />} />
-              <Route path="/perifericos" element={<PerifericosPage />} />
-              <Route path="/pc/:id" element={<PcDetailPage />} />
-              <Route path="/admin" element={<AdminPanel />} />
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-          </BrowserRouter>
-        </TooltipProvider>
+        <AdminProvider>
+          <TooltipProvider>
+            <Toaster />
+            <Sonner />
+            <BrowserRouter>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/pcs" element={<PcsPage />} />
+                <Route path="/perifericos" element={<PerifericosPage />} />
+                <Route path="/pc/:id" element={<PcDetailPage />} />
+                <Route path="/admin" element={<AdminPanel />} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </BrowserRouter>
+          </TooltipProvider>
+        </AdminProvider>
       </ProductsProvider>
     </AuthProvider>
   </QueryClientProvider>
