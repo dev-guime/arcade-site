@@ -102,7 +102,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(pc.secondary_images) ? pc.secondary_images.map(String) : [],
         description: pc.description || '',
         highlight_text: pc.highlight_text || '',
-        highlight_color: pc.highlight_color || 'cyan',
+        // highlight_color handled by form
         image: pc.image || '',
       })) || [];
       
@@ -137,7 +137,7 @@ export const ProductsProvider: React.FC<{ children: ReactNode }> = ({ children }
         secondary_images: Array.isArray(periferico.secondary_images) ? periferico.secondary_images.map(String) : [],
         description: periferico.description || '',
         highlight_text: periferico.highlight_text || '',
-        highlight_color: periferico.highlight_color || 'cyan',
+        // highlight_color handled by form
         image: periferico.image || '',
       })) || [];
       
