@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       computers: {
         Row: {
+          border_color: string | null
           cooler: string | null
           cpu: string | null
           created_at: string | null
@@ -33,6 +34,7 @@ export type Database = {
           watercooler: string | null
         }
         Insert: {
+          border_color?: string | null
           cooler?: string | null
           cpu?: string | null
           created_at?: string | null
@@ -50,6 +52,7 @@ export type Database = {
           watercooler?: string | null
         }
         Update: {
+          border_color?: string | null
           cooler?: string | null
           cpu?: string | null
           created_at?: string | null
@@ -235,6 +238,7 @@ export type Database = {
       }
       sold_computers: {
         Row: {
+          border_color: string | null
           created_at: string | null
           customer: string
           id: string
@@ -246,6 +250,7 @@ export type Database = {
           updated_at: string | null
         }
         Insert: {
+          border_color?: string | null
           created_at?: string | null
           customer: string
           id?: string
@@ -257,6 +262,7 @@ export type Database = {
           updated_at?: string | null
         }
         Update: {
+          border_color?: string | null
           created_at?: string | null
           customer?: string
           id?: string
