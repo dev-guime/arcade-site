@@ -20,6 +20,7 @@ const computerSchema = z.object({
   motherboard: z.string().optional(),
   cooler: z.string().optional(),
   watercooler: z.string().optional(),
+  border_color: z.string().min(1, "Cor da borda é obrigatória"),
 });
 
 type ComputerFormData = z.infer<typeof computerSchema>;
@@ -49,6 +50,7 @@ export const ComputerForm = ({ editingComputer, onClose }: ComputerFormProps) =>
       motherboard: editingComputer?.motherboard || "",
       cooler: editingComputer?.cooler || "",
       watercooler: editingComputer?.watercooler || "",
+      border_color: editingComputer?.border_color || "#3b82f6",
     },
   });
 
@@ -69,6 +71,7 @@ export const ComputerForm = ({ editingComputer, onClose }: ComputerFormProps) =>
         main_image: mainImage,
         secondary_images: secondaryImages,
         is_sold: editingComputer?.is_sold || false,
+        border_color: data.border_color,
       };
 
       if (editingComputer) {
@@ -125,6 +128,55 @@ export const ComputerForm = ({ editingComputer, onClose }: ComputerFormProps) =>
             <p className="text-red-400 text-sm">{errors.price.message}</p>
           )}
         </div>
+      </div>
+
+      {/* Cor da Borda */}
+      <div className="space-y-3">
+        <Label className="text-white">Cor da Borda do Card *</Label>
+        <div className="grid grid-cols-4 md:grid-cols-8 gap-3">
+          {[
+            { name: "Azul", color: "#3b82f6" },
+            { name: "Roxo", color: "#8b5cf6" },
+            { name: "Rosa", color: "#ec4899" },
+            { name: "Verde", color: "#10b981" },
+            { name: "Amarelo", color: "#f59e0b" },
+            { name: "Vermelho", color: "#ef4444" },
+            { name: "Ciano", color: "#06b6d4" },
+            { name: "Laranja", color: "#f97316" },
+          ].map((colorOption) => (
+            <button
+              key={colorOption.color}
+              type="button"
+              onClick={() => setValue("border_color", colorOption.color)}
+              className={`relative w-full h-12 rounded-lg border-2 transition-all hover:scale-105 ${
+                watch("border_color") === colorOption.color
+                  ? "border-white shadow-lg"
+                  : "border-gray-600 hover:border-gray-400"
+              }`}
+              style={{ backgroundColor: colorOption.color }}
+              title={colorOption.name}
+            >
+              {watch("border_color") === colorOption.color && (
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="w-4 h-4 bg-white rounded-full" />
+                </div>
+              )}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-3">
+          <Label htmlFor="custom_color" className="text-gray-300">Cor personalizada:</Label>
+          <Input
+            id="custom_color"
+            type="color"
+            {...register("border_color")}
+            className="w-16 h-10 bg-gray-700 border-gray-600 cursor-pointer"
+          />
+          <span className="text-gray-400 text-sm">{watch("border_color")}</span>
+        </div>
+        {errors.border_color && (
+          <p className="text-red-400 text-sm">{errors.border_color.message}</p>
+        )}
       </div>
 
       {/* Imagem Principal */}

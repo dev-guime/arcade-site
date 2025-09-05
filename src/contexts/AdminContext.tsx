@@ -16,6 +16,7 @@ interface Computer {
   cooler?: string;
   watercooler?: string;
   is_sold: boolean;
+  border_color?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -28,6 +29,7 @@ interface SoldComputer {
   location: string;
   image?: string;
   specs: string[];
+  border_color?: string;
   created_at?: string;
   updated_at?: string;
 }
@@ -107,6 +109,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         watercooler: computer.watercooler || "",
         main_image: computer.main_image || "",
         is_sold: computer.is_sold || false,
+        border_color: computer.border_color || "#3b82f6",
       })) || [];
       
       setComputers(formattedComputers);
@@ -133,6 +136,7 @@ export const AdminProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         ...soldComputer,
         specs: Array.isArray(soldComputer.specs) ? soldComputer.specs.map(String) : [],
         image: soldComputer.image || "",
+        border_color: soldComputer.border_color || "#3b82f6",
       })) || [];
       
       setSoldComputers(formattedSoldComputers);
