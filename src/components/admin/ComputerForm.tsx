@@ -8,19 +8,49 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { ImageUploadButton } from "./ImageUploadButton";
 import { useAdmin } from "@/contexts/AdminContext";
+import { sanitizeInput, formRateLimiter } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { X, Plus } from "lucide-react";
 
 const computerSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
-  price: z.number().min(0, "Preço deve ser positivo"),
-  gpu: z.string().optional(),
-  cpu: z.string().optional(),
-  ram: z.string().optional(),
-  storage: z.string().optional(),
-  motherboard: z.string().optional(),
-  cooler: z.string().optional(),
-  watercooler: z.string().optional(),
-  border_color: z.string().min(1, "Cor da borda é obrigatória"),
+  name: z.string()
+    .min(1, "Nome é obrigatório")
+    .max(100, "Nome muito longo")
+    .transform(val => sanitizeInput(val)),
+  price: z.number()
+    .min(0, "Preço deve ser positivo")
+    .max(999999, "Preço muito alto"),
+  gpu: z.string()
+    .max(100, "Especificação muito longa")
+    .optional()
+    .transform(val => val ? sanitizeInput(val) : val),
+  cpu: z.string()
+    .max(100, "Especificação muito longa")
+    .optional()
+    .transform(val => val ? sanitizeInput(val) : val),
+  ram: z.string()
+    .max(50, "Especificação muito longa")
+    .optional()
+    .transform(val => val ? sanitizeInput(val) : val),
+  storage: z.string()
+    .max(100, "Especificação muito longa")
+    .optional()
+    .transform(val => val ? sanitizeInput(val) : val),
+  motherboard: z.string()
+    .max(100, "Especificação muito longa")
+    .optional()
+    .transform(val => val ? sanitizeInput(val) : val),
+  cooler: z.string()
+    .max(100, "Especificação muito longa")
+    .optional()
+    .transform(val => val ? sanitizeInput(val) : val),
+  watercooler: z.string()
+    .max(100, "Especificação muito longa")
+    .optional()
+    .transform(val => val ? sanitizeInput(val) : val),
+  border_color: z.string()
+    .min(1, "Cor da borda é obrigatória")
+    .regex(/^#[0-9A-Fa-f]{6}$/, "Cor inválida"),
 });
 
 type ComputerFormData = z.infer<typeof computerSchema>;
@@ -32,6 +62,7 @@ interface ComputerFormProps {
 
 export const ComputerForm = ({ editingComputer, onClose }: ComputerFormProps) => {
   const { addComputer, updateComputer } = useAdmin();
+  const { toast } = useToast();
   const [mainImage, setMainImage] = useState(editingComputer?.main_image || "");
   const [secondaryImages, setSecondaryImages] = useState<string[]>(
     editingComputer?.secondary_images || []
@@ -55,6 +86,17 @@ export const ComputerForm = ({ editingComputer, onClose }: ComputerFormProps) =>
   });
 
   const onSubmit = async (data: ComputerFormData) => {
+    // Rate limiting check
+    const rateLimitKey = `computer-form-${Date.now()}`;
+    if (!formRateLimiter.isAllowed(rateLimitKey)) {
+      toast({
+        title: "Muitas tentativas",
+        description: "Aguarde um momento antes de tentar novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       setLoading(true);
       

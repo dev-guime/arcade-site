@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { ComputerManagement } from "./ComputerManagement";
 import { SoldComputersManagement } from "./SoldComputersManagement";
 import { ExpensesManagement } from "./ExpensesManagement";
+import { UserManagement } from "./UserManagement";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useEffect } from "react";
@@ -61,15 +62,18 @@ export const NewAdminPanel = () => {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto p-6">
         <Tabs defaultValue="computers" className="w-full">
-          <TabsList className="grid w-full grid-cols-3 mb-8 bg-gray-800">
+          <TabsList className="grid w-full grid-cols-4 mb-8 bg-gray-800">
             <TabsTrigger value="computers" className="data-[state=active]:bg-purple-600">
-              Cadastro de Computadores
+              Computadores
             </TabsTrigger>
             <TabsTrigger value="portfolio" className="data-[state=active]:bg-purple-600">
-              Portfólio de Vendidos
+              Portfólio
             </TabsTrigger>
             <TabsTrigger value="expenses" className="data-[state=active]:bg-purple-600">
-              Gastos Mensais
+              Gastos
+            </TabsTrigger>
+            <TabsTrigger value="security" className="data-[state=active]:bg-purple-600">
+              Segurança
             </TabsTrigger>
           </TabsList>
 
@@ -111,6 +115,20 @@ export const NewAdminPanel = () => {
               </CardHeader>
               <CardContent>
                 <ExpensesManagement />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="security">
+            <Card className="bg-gray-800 border-gray-700">
+              <CardHeader>
+                <CardTitle className="text-white">Configurações de Segurança</CardTitle>
+                <CardDescription className="text-gray-400">
+                  Gerencie usuários, roles e configurações de segurança.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <UserManagement />
               </CardContent>
             </Card>
           </TabsContent>

@@ -7,14 +7,27 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ImageUploadButton } from "./ImageUploadButton";
 import { useAdmin } from "@/contexts/AdminContext";
+import { sanitizeInput, formRateLimiter } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
 import { X, Plus } from "lucide-react";
 
 const soldComputerSchema = z.object({
-  name: z.string().min(1, "Nome é obrigatório"),
-  customer: z.string().min(1, "Nome do cliente é obrigatório"),
+  name: z.string()
+    .min(1, "Nome é obrigatório")
+    .max(100, "Nome muito longo")
+    .transform(val => sanitizeInput(val)),
+  customer: z.string()
+    .min(1, "Nome do cliente é obrigatório")
+    .max(100, "Nome do cliente muito longo")
+    .transform(val => sanitizeInput(val)),
   sold_date: z.string().min(1, "Data da venda é obrigatória"),
-  location: z.string().min(1, "Localização é obrigatória"),
-  border_color: z.string().min(1, "Cor da borda é obrigatória"),
+  location: z.string()
+    .min(1, "Localização é obrigatória")
+    .max(100, "Localização muito longa")
+    .transform(val => sanitizeInput(val)),
+  border_color: z.string()
+    .min(1, "Cor da borda é obrigatória")
+    .regex(/^#[0-9A-Fa-f]{6}$/, "Cor inválida"),
 });
 
 type SoldComputerFormData = z.infer<typeof soldComputerSchema>;
@@ -26,6 +39,7 @@ interface SoldComputerFormProps {
 
 export const SoldComputerForm = ({ editingSoldComputer, onClose }: SoldComputerFormProps) => {
   const { addSoldComputer, updateSoldComputer } = useAdmin();
+  const { toast } = useToast();
   const [image, setImage] = useState(editingSoldComputer?.image || "");
   const [specs, setSpecs] = useState<string[]>(editingSoldComputer?.specs || []);
   const [newSpec, setNewSpec] = useState("");
@@ -43,8 +57,22 @@ export const SoldComputerForm = ({ editingSoldComputer, onClose }: SoldComputerF
   });
 
   const onSubmit = async (data: SoldComputerFormData) => {
+    // Rate limiting check
+    const rateLimitKey = `sold-computer-form-${Date.now()}`;
+    if (!formRateLimiter.isAllowed(rateLimitKey)) {
+      toast({
+        title: "Muitas tentativas",
+        description: "Aguarde um momento antes de tentar novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
     try {
       setLoading(true);
+      
+      // Sanitize specs as well
+      const sanitizedSpecs = specs.map(spec => sanitizeInput(spec));
       
       const soldComputerData = {
         name: data.name,
@@ -52,14 +80,22 @@ export const SoldComputerForm = ({ editingSoldComputer, onClose }: SoldComputerF
         sold_date: data.sold_date,
         location: data.location,
         image,
-        specs,
+        specs: sanitizedSpecs,
         border_color: data.border_color,
       };
 
       if (editingSoldComputer) {
         await updateSoldComputer(editingSoldComputer.id, soldComputerData);
+        console.info('Sold computer updated:', { 
+          id: editingSoldComputer.id, 
+          timestamp: new Date().toISOString() 
+        });
       } else {
         await addSoldComputer(soldComputerData);
+        console.info('Sold computer added:', { 
+          customer: data.customer, 
+          timestamp: new Date().toISOString() 
+        });
       }
       
       onClose();
@@ -71,9 +107,16 @@ export const SoldComputerForm = ({ editingSoldComputer, onClose }: SoldComputerF
   };
 
   const addSpec = () => {
-    if (newSpec.trim()) {
-      setSpecs([...specs, newSpec.trim()]);
+    const sanitizedSpec = sanitizeInput(newSpec.trim());
+    if (sanitizedSpec && sanitizedSpec.length <= 100) {
+      setSpecs([...specs, sanitizedSpec]);
       setNewSpec("");
+    } else if (sanitizedSpec.length > 100) {
+      toast({
+        title: "Especificação muito longa",
+        description: "Máximo de 100 caracteres por especificação.",
+        variant: "destructive",
+      });
     }
   };
 

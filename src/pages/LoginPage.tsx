@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { useToast } from "@/hooks/use-toast";
+import { sanitizeInput, formRateLimiter } from "@/lib/utils";
 import { Lock, Mail, ArrowLeft, UserPlus } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
@@ -31,7 +32,21 @@ const LoginPage = () => {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isValidEmail(email)) {
+    // Rate limiting check
+    const rateLimitKey = `signin-${email}`;
+    if (!formRateLimiter.isAllowed(rateLimitKey)) {
+      toast({
+        title: "Muitas tentativas",
+        description: "Aguarde 30 segundos antes de tentar novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Input sanitization
+    const sanitizedEmail = sanitizeInput(email.toLowerCase().trim());
+    
+    if (!isValidEmail(sanitizedEmail)) {
       toast({
         title: "Erro de validação",
         description: "Por favor, insira um email válido.",
@@ -51,9 +66,16 @@ const LoginPage = () => {
 
     try {
       setLoading(true);
-      const { error } = await signIn(email, password);
+      const { error } = await signIn(sanitizedEmail, password);
       
       if (error) {
+        // Log security event for failed login attempts
+        console.warn('Failed login attempt:', { 
+          email: sanitizedEmail, 
+          timestamp: new Date().toISOString(),
+          error: error.message 
+        });
+        
         toast({
           title: "Erro no login",
           description: error.message || "Credenciais inválidas. Verifique seu email e senha.",
@@ -62,12 +84,19 @@ const LoginPage = () => {
         return;
       }
 
+      // Log successful login
+      console.info('Successful login:', { 
+        email: sanitizedEmail, 
+        timestamp: new Date().toISOString() 
+      });
+
       toast({
         title: "Login realizado com sucesso!",
         description: "Bem-vindo ao painel administrativo.",
       });
       navigate("/admin");
     } catch (error) {
+      console.error('Login error:', error);
       toast({
         title: "Erro no login",
         description: "Ocorreu um erro inesperado. Tente novamente.",
@@ -81,7 +110,21 @@ const LoginPage = () => {
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!isValidEmail(email)) {
+    // Rate limiting check
+    const rateLimitKey = `signup-${email}`;
+    if (!formRateLimiter.isAllowed(rateLimitKey)) {
+      toast({
+        title: "Muitas tentativas",
+        description: "Aguarde 30 segundos antes de tentar novamente.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Input sanitization
+    const sanitizedEmail = sanitizeInput(email.toLowerCase().trim());
+    
+    if (!isValidEmail(sanitizedEmail)) {
       toast({
         title: "Erro de validação",
         description: "Por favor, insira um email válido.",
@@ -110,9 +153,16 @@ const LoginPage = () => {
 
     try {
       setLoading(true);
-      const { error } = await signUp(email, password);
+      const { error } = await signUp(sanitizedEmail, password);
       
       if (error) {
+        // Log security event for failed signup attempts
+        console.warn('Failed signup attempt:', { 
+          email: sanitizedEmail, 
+          timestamp: new Date().toISOString(),
+          error: error.message 
+        });
+
         if (error.message?.includes('already registered')) {
           toast({
             title: "Email já cadastrado",
@@ -129,6 +179,12 @@ const LoginPage = () => {
         return;
       }
 
+      // Log successful signup
+      console.info('Successful signup:', { 
+        email: sanitizedEmail, 
+        timestamp: new Date().toISOString() 
+      });
+
       toast({
         title: "Conta criada com sucesso!",
         description: "Verifique seu email para confirmar a conta e fazer login.",
@@ -138,6 +194,7 @@ const LoginPage = () => {
       setPassword("");
       setConfirmPassword("");
     } catch (error) {
+      console.error('Signup error:', error);
       toast({
         title: "Erro no cadastro",
         description: "Ocorreu um erro inesperado. Tente novamente.",
