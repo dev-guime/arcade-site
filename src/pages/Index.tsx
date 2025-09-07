@@ -22,12 +22,12 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           {/* Logo - Floating Animation */}
           <div className="mb-6 md:mb-8 flex justify-center">
-            <img src="/lovable-uploads/b63993e7-3962-4d10-9055-952ee2c0d607.png" alt="Arena X Logo" className="w-32 h-32 md:w-72 md:h-72 floating-logo object-cover" />
+            <img src="/lovable-uploads/logo.png" alt="Arena X Logo" className="w-64 h-64 md:w-96 md:h-96 floating-logo object-cover" />
           </div>
           
           {/* Improved Slogan with Mental Triggers */}
           <div className="text-lg md:text-xl text-gray-300 mb-8 md:mb-12 font-light tracking-wide px-4">
-            <p className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent text-2xl md:text-3xl font-bold mb-2">
+            <p className="bg-gradient-to-r from-purple-200 via-purple-400 to-purple-800 bg-clip-text text-transparent text-2xl md:text-3xl font-bold mb-2">
               Seu setup, sua batalha, nossa arena.
             </p>
             <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-purple-500 mx-auto rounded-full"></div>
