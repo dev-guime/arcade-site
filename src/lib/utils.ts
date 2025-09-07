@@ -82,16 +82,78 @@ class RateLimiter {
 
 export const formRateLimiter = new RateLimiter(3, 30000);
 
-// Security logging utility
-export const logSecurityEvent = (event: string, details: Record<string, any>) => {
+// Enhanced security logging utility with database integration
+export const logSecurityEvent = async (event: string, details: Record<string, any>) => {
   const logEntry = {
     event,
     timestamp: new Date().toISOString(),
+    user_agent: typeof navigator !== 'undefined' ? navigator.userAgent : 'unknown',
     ...details
   };
   
   console.info('Security Event:', logEntry);
   
-  // In production, this could be sent to a logging service
-  // Example: analytics.track('security_event', logEntry);
+  // Send to centralized security logging system
+  try {
+    // Only import supabase client when needed to avoid circular dependencies
+    const { supabase } = await import('@/integrations/supabase/client');
+    
+    await supabase.from('security_logs').insert({
+      event_type: event,
+      user_id: details.userId || null,
+      user_agent: logEntry.user_agent,
+      details: details
+    });
+  } catch (error) {
+    // Fail silently to prevent security logging from breaking the app
+    console.warn('Failed to log security event to database:', error);
+  }
+};
+
+// Session management utility
+export const validateSession = () => {
+  const sessionTimeout = 8 * 60 * 60 * 1000; // 8 hours
+  const lastActivity = localStorage.getItem('lastActivity');
+  
+  if (lastActivity) {
+    const timeSinceActivity = Date.now() - parseInt(lastActivity);
+    if (timeSinceActivity > sessionTimeout) {
+      localStorage.removeItem('lastActivity');
+      return false;
+    }
+  }
+  
+  localStorage.setItem('lastActivity', Date.now().toString());
+  return true;
+};
+
+// Password strength validator
+export const validatePasswordStrength = (password: string): { 
+  isValid: boolean; 
+  score: number; 
+  feedback: string[] 
+} => {
+  const feedback: string[] = [];
+  let score = 0;
+
+  if (password.length >= 8) score += 1;
+  else feedback.push('Password should be at least 8 characters long');
+
+  if (/[a-z]/.test(password)) score += 1;
+  else feedback.push('Include lowercase letters');
+
+  if (/[A-Z]/.test(password)) score += 1;
+  else feedback.push('Include uppercase letters');
+
+  if (/\d/.test(password)) score += 1;
+  else feedback.push('Include numbers');
+
+  if (/[^a-zA-Z\d]/.test(password)) score += 1;
+  else feedback.push('Include special characters');
+
+  return {
+    isValid: score >= 4,
+    score,
+    feedback
+  };
 };
