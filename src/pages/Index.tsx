@@ -22,13 +22,16 @@ const Index = () => {
         <div className="max-w-4xl mx-auto">
           {/* Logo - Floating Animation */}
           <div className="mb-6 md:mb-8 flex justify-center">
-            <img src="/lovable-uploads/24481fb9-70f0-4920-a3ef-371d05e6006b.png" alt="Arena X Logo" className="w-32 h-32 md:w-72 md:h-72 floating-logo object-cover" />
+            <img src="/lovable-uploads/b63993e7-3962-4d10-9055-952ee2c0d607.png" alt="Arena X Logo" className="w-32 h-32 md:w-72 md:h-72 floating-logo object-cover" />
           </div>
           
           {/* Improved Slogan with Mental Triggers */}
-          <p className="text-lg md:text-xl text-gray-300 mb-8 md:mb-12 font-light tracking-wide px-4">
-            <span className="text-cyan-400 font-semibold">Seu setup, sua batalha, nossa arena.</span>
-          </p>
+          <div className="text-lg md:text-xl text-gray-300 mb-8 md:mb-12 font-light tracking-wide px-4">
+            <p className="bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 bg-clip-text text-transparent text-2xl md:text-3xl font-bold mb-2">
+              Seu setup, sua batalha, nossa arena.
+            </p>
+            <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-purple-500 mx-auto rounded-full"></div>
+          </div>
         </div>
       </header>
 
@@ -40,12 +43,12 @@ const Index = () => {
       {/* Main CTA Section */}
       <section className="relative z-10 text-center py-8 md:py-16 px-4">
         <div className="max-w-2xl mx-auto space-y-4 md:space-y-6">
-          <Button onClick={() => navigate('/pcs')} className="group relative w-full md:w-auto px-10 md:px-16 py-5 md:py-8 text-xl md:text-2xl font-bold bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 border-2 border-cyan-400 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] button-pulse">
+          <Button onClick={() => navigate('/pcs')} className="group relative w-full md:w-auto px-8 md:px-12 py-4 md:py-6 text-lg md:text-xl font-bold bg-gradient-to-r from-cyan-500 to-purple-600 hover:from-cyan-400 hover:to-purple-500 border-2 border-cyan-400 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_30px_rgba(34,211,238,0.6)] button-pulse">
             <span className="relative z-10">VEJA NOSSOS PC'S</span>
             <div className="absolute inset-0 bg-gradient-to-r from-cyan-600 to-purple-700 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-lg"></div>
           </Button>
           
-          <Button onClick={() => navigate('/perifericos')} className="group relative w-full md:w-auto px-10 md:px-16 py-5 md:py-8 text-xl md:text-2xl font-bold bg-gradient-to-r from-pink-500 to-orange-600 hover:from-pink-400 hover:to-orange-500 border-2 border-pink-400 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] button-pulse flex items-center justify-center gap-3">
+          <Button onClick={() => navigate('/perifericos')} className="group relative w-full md:w-auto px-8 md:px-12 py-4 md:py-6 text-lg md:text-xl font-bold bg-gradient-to-r from-pink-500 to-orange-600 hover:from-pink-400 hover:to-orange-500 border-2 border-pink-400 rounded-lg transition-all duration-300 transform hover:scale-105 hover:shadow-[0_0_30px_rgba(236,72,153,0.6)] button-pulse flex items-center justify-center gap-3">
             <Gamepad2 className="w-5 h-5 md:w-6 md:h-6" />
             <span className="relative z-10">VEJA NOSSOS PERIFÉRICOS</span>
             <div className="absolute inset-0 bg-gradient-to-r from-pink-600 to-orange-700 opacity-0 group-hover:opacity-20 transition-opacity duration-300 rounded-lg"></div>
