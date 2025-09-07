@@ -41,7 +41,7 @@ const PerifericosPage = () => {
   };
 
   const renderProducts = (products: any[]) => (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 max-w-7xl mx-auto">
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 max-w-7xl mx-auto">
       {products.map((item) => (
         <Card
           key={item.id}
@@ -66,7 +66,7 @@ const PerifericosPage = () => {
           )}
           
           {/* Image or Icon */}
-          <div className="relative h-48 overflow-hidden rounded-t-lg mt-2 mx-2 flex items-center justify-center">
+          <div className="relative h-56 md:h-64 overflow-hidden rounded-t-lg mt-2 mx-2 flex items-center justify-center">
             {item.image ? (
               <img 
                 src={item.image} 

@@ -19,7 +19,7 @@ interface PcsDesktopCarouselProps {
 
 export const PcsDesktopCarousel = ({ pcs, hoveredId, borderColors, setHoveredId }: PcsDesktopCarouselProps) => {
   return (
-    <div className="hidden md:block relative px-24 py-12">
+    <div className="hidden md:block relative px-24 py-16">
       <Carousel 
         className="w-full"
         opts={{

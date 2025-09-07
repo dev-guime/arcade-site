@@ -97,7 +97,7 @@ export const PcCard = ({
       )}
       
       {/* PC Image - Corrigido para cobrir 100% sem aumentar o quadro */}
-      <div className={`relative ${isMobile ? 'h-32' : 'h-40'} overflow-hidden rounded-t-lg mt-2 mx-2 flex-shrink-0`}>
+      <div className={`relative ${isMobile ? 'h-48' : 'h-64'} overflow-hidden rounded-t-lg mt-2 mx-2 flex-shrink-0`}>
         <img 
           src={pc.image || "/lovable-uploads/f8260b15-2b51-400a-8d32-6242095a4419.png"} 
           alt={pc.name}
