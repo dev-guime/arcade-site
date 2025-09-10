@@ -104,7 +104,7 @@ const PerifericosPage = () => {
             </div>
             
             <Button 
-              onClick={() => window.open('https://wa.me/5543984273723', '_blank')}
+              onClick={() => window.open('https://wa.me/5543988176106', '_blank')}
               className="w-full bg-gradient-to-r from-pink-500 to-orange-600 hover:from-pink-400 hover:to-orange-500 border border-pink-400 transition-all duration-300"
             >
               QUERO ESTE

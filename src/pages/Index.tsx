@@ -8,7 +8,7 @@ import { MessageCircle, Gamepad2 } from "lucide-react";
 const Index = () => {
   const navigate = useNavigate();
   const handleWhatsAppClick = () => {
-    window.open('https://wa.me/5543984273723', '_blank');
+    window.open('https://wa.me/5549881761063', '_blank');
   };
   return <div className="min-h-screen bg-black text-white relative overflow-hidden">
       {/* Tech Background */}
@@ -27,10 +27,10 @@ const Index = () => {
           
           {/* Improved Slogan with Mental Triggers */}
           <div className="text-lg md:text-xl text-gray-300 mb-8 md:mb-12 font-light tracking-wide px-4">
-            <p className="bg-gradient-to-r from-purple-200 via-purple-400 to-purple-800 bg-clip-text text-transparent text-2xl md:text-3xl font-bold mb-2">
-              Seu setup, sua batalha, nossa arena.
+            <p className="bg-gradient-to-r from-purple-200 via-purple-400 to-purple-500 bg-clip-text text-transparent text-2xl md:text-3xl font-bold mb-2">
+              seu setup, sua batalha, nossa arena
             </p>
-            <div className="w-24 h-1 bg-gradient-to-r from-cyan-400 to-purple-500 mx-auto rounded-full"></div>
+            <div className="w-96 h-1 bg-gradient-to-r from-purple-400 to-purple-500 mx-auto rounded-full"></div>
           </div>
         </div>
       </header>
